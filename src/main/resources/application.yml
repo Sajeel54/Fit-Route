@@ -1,0 +1,5 @@
+spring:
+  application:
+    name:  fitRoute
+  profiles:
+    active: dev
