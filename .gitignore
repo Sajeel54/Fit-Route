@@ -30,4 +30,6 @@ build/
 !**/src/test/**/build/
 
 ### VS Code ###
-.vscode/
+.vscode
+# Ignore application-dev.yml in the resources directory
+src/main/resources/application-dev.yml
