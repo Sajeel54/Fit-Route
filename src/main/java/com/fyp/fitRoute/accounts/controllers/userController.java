@@ -1,5 +1,7 @@
 package com.fyp.fitRoute.accounts.controllers;
 
+import com.fyp.fitRoute.accounts.Entity.follows;
+import com.fyp.fitRoute.accounts.Services.followsService;
 import com.fyp.fitRoute.accounts.Services.userService;
 import com.fyp.fitRoute.security.Entity.UserCredentials;
 import org.bson.types.ObjectId;
@@ -18,7 +20,10 @@ import java.util.Optional;
 @RequestMapping("/Profile")
 public class userController {
     @Autowired
-    userService uService;
+    private userService uService;
+
+    @Autowired
+    private followsService flwService;
 
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/ADMIN")
@@ -40,21 +45,60 @@ public class userController {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             String name = authentication.getName();
 
-            Optional<UserCredentials> found = uService.getUserByName(name);
-            if (found.isEmpty())
-                throw new Exception("Not found");
-            return new ResponseEntity<>(found, HttpStatus.OK);
+            Optional<UserCredentials> myProfile = uService.getUserByName(name);
+            if (myProfile.isEmpty())
+                throw new Exception("Your Profile not identified");
+            return new ResponseEntity<>(myProfile.get(), HttpStatus.OK);
         } catch (Exception e){
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
 
         }
     }
 
-
-    @PutMapping("/{id}")
-    public ResponseEntity<?> updateBook(@PathVariable ObjectId id, @RequestBody UserCredentials userDetails) {
+    @GetMapping("/followers")
+    public ResponseEntity<?> getFollowers(){
         try{
-            UserCredentials saved = uService.updateUser(id, userDetails);
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            String name = authentication.getName();
+
+            Optional<UserCredentials> myProfile = uService.getUserByName(name);
+            if (myProfile.isEmpty())
+                throw new Exception("No follower found");
+
+            List<follows> followers = flwService.getFollowers(myProfile.get().getId());
+            return new ResponseEntity<>(followers, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.NO_CONTENT);
+        }
+    }
+
+    @GetMapping("/followings")
+    public ResponseEntity<?> getFollowings(){
+        try{
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            String name = authentication.getName();
+
+            Optional<UserCredentials> myProfile = uService.getUserByName(name);
+            if (myProfile.isEmpty())
+                throw new Exception("No follower found");
+
+            List<follows> followers = flwService.getFollowing(myProfile.get().getId());
+            return new ResponseEntity<>(followers, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.NO_CONTENT);
+        }
+    }
+
+    @PutMapping
+    public ResponseEntity<?> updateUser(@RequestBody UserCredentials userDetails) {
+        try{
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            String name = authentication.getName();
+
+            Optional<UserCredentials> found = uService.getUserByName(name);
+            if (found.isEmpty())
+                throw new Exception("Not found");
+            UserCredentials saved = uService.updateUser(found.get().getId(), userDetails);
             return new ResponseEntity<>(saved, HttpStatus.OK);
         } catch (Exception e){
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
@@ -62,11 +106,20 @@ public class userController {
         }
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteBook(@PathVariable ObjectId id) {
+    @DeleteMapping
+    public ResponseEntity<?> deleteUser() {
         try{
-            uService.deleteUsers(id);
-            return new ResponseEntity<>("Deletion successful", HttpStatus.OK);
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            String name = authentication.getName();
+
+            Optional<UserCredentials> found = uService.getUserByName(name);
+            if (found.isEmpty())
+                throw new Exception("Not found");
+            boolean check = uService.deleteUsers(found.get().getId());
+            if (check)
+                return new ResponseEntity<>("Deletion successful", HttpStatus.OK);
+            else
+                throw new Exception("User not deleted");
         } catch (Exception e){
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
 

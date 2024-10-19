@@ -31,19 +31,22 @@ public class userService {
         return userRepo.save(user);
     }
 
-    public UserCredentials updateUser(ObjectId id, UserCredentials userDetails) {
+    public UserCredentials updateUser(String id, UserCredentials userDetails) {
         UserCredentials user = userRepo.findById(id).orElseThrow(() -> new RuntimeException("User not found"));
-//        user.setUpdatedAt(Date.from(Instant.now()));
+        user.setUpdatedAt(Date.from(Instant.now()));
         user.setUsername(userDetails.getUsername());
         user.setPassword(userDetails.getPassword());
         user.setEmail(userDetails.getEmail());
-//        user.setDob(userDetails.getDob());
-//        user.setBio(userDetails.getBio());
+        user.setDob(userDetails.getDob());
+        user.setBio(userDetails.getBio());
         return userRepo.save(user);
     }
 
-    public void deleteUsers(ObjectId id) {
+    public boolean deleteUsers(String id) {
         UserCredentials user = userRepo.findById(id).orElseThrow(() -> new RuntimeException("Book not found"));
         userRepo.delete(user);
+        Optional<UserCredentials> checker = userRepo.findById(id);
+
+        return checker.isEmpty();
     }
 }

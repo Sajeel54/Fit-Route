@@ -8,6 +8,6 @@ import org.springframework.stereotype.Component;
 import java.util.Optional;
 
 @Component
-public interface userCredentialsRepo extends MongoRepository<UserCredentials, ObjectId> {
+public interface userCredentialsRepo extends MongoRepository<UserCredentials, String> {
     Optional<UserCredentials> findByUsername(String username);
 }
