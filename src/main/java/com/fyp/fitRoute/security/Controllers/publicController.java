@@ -2,12 +2,9 @@ package com.fyp.fitRoute.security.Controllers;
 
 import com.fyp.fitRoute.accounts.Services.userService;
 import com.fyp.fitRoute.security.Entity.UserCredentials;
-import com.fyp.fitRoute.security.Repositories.userCredentialsRepo;
 import com.fyp.fitRoute.security.Services.MyUserDetailService;
 import com.fyp.fitRoute.security.Utilities.JwtUtils;
 import com.fyp.fitRoute.security.Utilities.loginRequest;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,13 +15,13 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
+import java.time.Instant;
+import java.util.Date;
 
 @RestController
 @RequestMapping("/public")
 public class publicController {
 
-    private static final Logger log = LoggerFactory.getLogger(publicController.class);
     @Autowired
     private AuthenticationManager authenticationManager;
     @Autowired
@@ -42,6 +39,10 @@ public class publicController {
         try{
             user.setPassword(passwordEncoder.encode(user.getPassword()));
             UserCredentials createdUser = uService.addUser(user);
+            user.setCreatedAt(Date.from(Instant.now()));
+            user.setUpdatedAt(user.getCreatedAt());
+            user.setRole("USER");
+            user.setImageUrl("");
             return new ResponseEntity<>(createdUser, HttpStatus.CREATED);
         } catch (Exception e){
             return new ResponseEntity<>("User Already Exists", HttpStatus.BAD_REQUEST);

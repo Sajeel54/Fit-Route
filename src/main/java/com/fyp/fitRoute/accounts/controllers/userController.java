@@ -1,9 +1,11 @@
 package com.fyp.fitRoute.accounts.controllers;
 
 import com.fyp.fitRoute.accounts.Entity.follows;
+import com.fyp.fitRoute.accounts.Services.firebaseService;
 import com.fyp.fitRoute.accounts.Services.followsService;
 import com.fyp.fitRoute.accounts.Services.userService;
 import com.fyp.fitRoute.security.Entity.UserCredentials;
+import com.google.api.Http;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -12,6 +14,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Optional;
@@ -25,6 +28,23 @@ public class userController {
     @Autowired
     private followsService flwService;
 
+    @Autowired
+    private firebaseService frbsService;
+
+
+    @PostMapping("/upload-picture")
+    public ResponseEntity<?> uploadProfilePicture(@RequestParam("image")MultipartFile profilePicture){
+        try {
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            UserCredentials user = uService.getProfile(authentication, "User not found");
+            String url = frbsService.upload(profilePicture, user.getUsername());
+            user.setImageUrl(url);
+            UserCredentials updatedUser = uService.updateUser(user.getId(), user);
+            return new ResponseEntity<>(updatedUser, HttpStatus.OK);
+        } catch (Exception e){
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+    }
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/ADMIN")
     public ResponseEntity<?> getAllUsers() {
@@ -43,12 +63,8 @@ public class userController {
     public ResponseEntity<?> getUserProfile() {
         try{
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-            String name = authentication.getName();
-
-            Optional<UserCredentials> myProfile = uService.getUserByName(name);
-            if (myProfile.isEmpty())
-                throw new Exception("Your Profile not identified");
-            return new ResponseEntity<>(myProfile.get(), HttpStatus.OK);
+            UserCredentials myProfile = uService.getProfile(authentication, "Your Profile not identified");
+            return new ResponseEntity<>(myProfile, HttpStatus.OK);
         } catch (Exception e){
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
 
@@ -61,11 +77,9 @@ public class userController {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             String name = authentication.getName();
 
-            Optional<UserCredentials> myProfile = uService.getUserByName(name);
-            if (myProfile.isEmpty())
-                throw new Exception("No follower found");
+            UserCredentials myProfile = uService.getProfile(authentication, "Your Profile not identified");
 
-            List<follows> followers = flwService.getFollowers(myProfile.get().getId());
+            List<follows> followers = flwService.getFollowers(myProfile.getId());
             return new ResponseEntity<>(followers, HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.NO_CONTENT);

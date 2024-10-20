@@ -1,16 +1,17 @@
 package com.fyp.fitRoute.security.Entity;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.Date;
-import java.util.List;
 
 @Document(collection = "users")
 @Data
+@NoArgsConstructor
 public class UserCredentials {
     @Id
     private String id;
@@ -19,10 +20,14 @@ public class UserCredentials {
     private String username;
     @NonNull
     private String password;
+    private String imageUrl;
     private String role;
     private String email;
     private Date dob;
     private String bio;
+    private int followers;
+    private int followings;
     private Date createdAt;
     private Date updatedAt;
+
 }

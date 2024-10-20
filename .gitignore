@@ -33,3 +33,5 @@ build/
 .vscode
 # Ignore application-dev.yml in the resources directory
 src/main/resources/application-dev.yml
+
+fitroute-firebase-secret.json

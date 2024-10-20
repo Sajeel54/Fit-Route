@@ -4,6 +4,7 @@ import com.fyp.fitRoute.security.Entity.UserCredentials;
 import com.fyp.fitRoute.security.Repositories.userCredentialsRepo;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
@@ -39,6 +40,7 @@ public class userService {
         user.setEmail(userDetails.getEmail());
         user.setDob(userDetails.getDob());
         user.setBio(userDetails.getBio());
+        user.setImageUrl(userDetails.getImageUrl());
         return userRepo.save(user);
     }
 
@@ -49,4 +51,16 @@ public class userService {
 
         return checker.isEmpty();
     }
+
+    public UserCredentials getProfile(Authentication authentication, String msgException) throws Exception {
+        String name = authentication.getName();
+
+        Optional<UserCredentials> user = getUserByName(name);
+
+        if (user.isEmpty())
+            throw new Exception(msgException);
+
+        return user.get();
+    }
+
 }

@@ -40,8 +40,15 @@ public class followsController {
 
             follows entry = new follows();
 
-            entry.setFollowing(myProfile.get().getId());
-            entry.setFollowed(followed.get().getId());
+            UserCredentials follower = myProfile.get();
+            UserCredentials followedData = followed.get();
+
+            entry.setFollowing(follower.getId());
+            entry.setFollowed(followedData.getId());
+            follower.setFollowings(((follower.getFollowings())+1));
+            followedData.setFollowers(((followedData.getFollowers())+1));
+            uService.addUser(follower);
+            uService.addUser(followedData);
             follows follow =  flwService.addFollow(entry);
             return new ResponseEntity<>(follow, HttpStatus.OK);
         } catch (Exception e) {
@@ -63,11 +70,14 @@ public class followsController {
             if (followed.isEmpty())
                 throw new Exception("user unable of being followed");
 
+            UserCredentials follower = myProfile.get();
+            UserCredentials followedData = followed.get();
 
-            UserCredentials profile = myProfile.get();
-            UserCredentials displayUser = followed.get();
-
-            boolean checkDeletion =  flwService.deleteFollow(followed.get().getId(), myProfile.get().getId());
+            follower.setFollowings(((follower.getFollowings())+1));
+            followedData.setFollowers(((followedData.getFollowers())+1));
+            uService.addUser(follower);
+            uService.addUser(followedData);
+            boolean checkDeletion =  flwService.deleteFollow(follower.getId(), followedData.getId());
             return new ResponseEntity<>(checkDeletion, HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
