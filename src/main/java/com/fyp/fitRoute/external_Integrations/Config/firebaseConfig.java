@@ -1,4 +1,4 @@
-package com.fyp.fitRoute.accounts.Config;
+package com.fyp.fitRoute.external_Integrations.Config;
 
 import com.google.auth.oauth2.GoogleCredentials;
 import com.google.firebase.FirebaseApp;

@@ -12,7 +12,7 @@ import java.util.Date;
 @Document(collection = "users")
 @Data
 @NoArgsConstructor
-public class UserCredentials {
+public class User {
     @Id
     private String id;
     @NonNull
@@ -25,6 +25,7 @@ public class UserCredentials {
     private String email;
     private Date dob;
     private String bio;
+    private String gender;
     private int followers;
     private int followings;
     private Date createdAt;

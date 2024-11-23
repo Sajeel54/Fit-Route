@@ -1,10 +1,9 @@
 package com.fyp.fitRoute.security.Services;
 
-import com.fyp.fitRoute.security.Entity.UserCredentials;
+import com.fyp.fitRoute.security.Entity.User;
 import com.fyp.fitRoute.security.Repositories.userCredentialsRepo;
 import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -21,10 +20,10 @@ public class MyUserDetailService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        Optional<UserCredentials> user = repository.findByUsername(username);
+        Optional<User> user = repository.findByUsername(username);
         if (user.isPresent()) {
             var userObj = user.get();
-            return User.builder()
+            return org.springframework.security.core.userdetails.User.builder()
                     .username(userObj.getUsername())
                     .password(userObj.getPassword())
                     .roles(getRoles(userObj))
@@ -34,7 +33,7 @@ public class MyUserDetailService implements UserDetailsService {
         }
     }
 
-    private String[] getRoles(UserCredentials user) {
+    private String[] getRoles(User user) {
         if (user.getRole() == null) {
             return new String[]{"USER"};
         }

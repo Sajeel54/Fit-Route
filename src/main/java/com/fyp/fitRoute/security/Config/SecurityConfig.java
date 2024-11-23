@@ -32,7 +32,7 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception{
         httpSecurity.csrf(AbstractHttpConfigurer::disable);
         httpSecurity.authorizeHttpRequests(request -> {
-            request.requestMatchers("/public/**").permitAll();
+            request.requestMatchers("/public/**", "/", "/swagger-ui/**", "/v3/api-docs/**").permitAll();
             request.requestMatchers("/admin/**").hasRole("ADMIN");
             request.requestMatchers("/user/**").hasRole("USER");
             request.anyRequest().authenticated();
@@ -64,5 +64,6 @@ public class SecurityConfig {
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
+
 
 }
