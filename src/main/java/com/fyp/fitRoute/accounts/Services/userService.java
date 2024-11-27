@@ -46,27 +46,39 @@ public class userService {
     public User updateUser(String id, User userDetails) {
         User user = userRepo.findById(id).orElseThrow(() -> new RuntimeException("User not found"));
         user.setUpdatedAt(Date.from(Instant.now()));
-        user.setUsername(userDetails.getUsername());
-        user.setPassword(userDetails.getPassword());
-        user.setEmail(userDetails.getEmail());
-        user.setDob(userDetails.getDob());
-        user.setBio(userDetails.getBio());
-        user.setGender(userDetails.getGender());
+        user.setUsername(userDetails.getUsername().isEmpty()?
+                user.getUsername() : userDetails.getUsername());
+        user.setPassword(userDetails.getPassword().isEmpty()?
+                user.getPassword() : userDetails.getPassword());
+        user.setEmail(userDetails.getEmail().isEmpty()?
+                user.getEmail() : userDetails.getEmail());
+        user.setDob(userDetails.getDob() == null ?
+                user.getDob() : userDetails.getDob());
+        user.setBio(userDetails.getBio().isEmpty()?
+                user.getBio() : userDetails.getBio());
+        user.setGender(userDetails.getGender().isEmpty()?
+                user.getGender() : userDetails.getGender());
         return userRepo.save(user);
     }
 
 
     public boolean deleteUsers(String id) {
         Query followingQuery = new Query(Criteria.where("following").is(id));
-        List<follows> followingRecords = mongoTemplate.find(followingQuery, follows.class);
-        followingRecords.forEach(rec -> userRepo.findById(rec.getFollowed()).ifPresent(user -> {
+        List<String> followingRecords = mongoTemplate.find(followingQuery, follows.class)
+                .stream()
+                .map(follows::getFollowed)
+                .toList();
+        followingRecords.forEach(rec -> userRepo.findById(rec).ifPresent(user -> {
             user.setFollowers(user.getFollowers() - 1);
             userRepo.save(user);
         }));
 
         Query followedQuery = new Query(Criteria.where("followed").is(id));
-        List<follows> followedRecords = mongoTemplate.find(followedQuery, follows.class);
-        followedRecords.forEach(rec -> userRepo.findById(rec.getFollowing()).ifPresent(user -> {
+        List<String> followedRecords = mongoTemplate.find(followedQuery, follows.class)
+                .stream()
+                .map(follows::getFollowed)
+                .toList();
+        followedRecords.forEach(rec -> userRepo.findById(rec).ifPresent(user -> {
             user.setFollowings(user.getFollowings() - 1);
             userRepo.save(user);
         }));
@@ -95,41 +107,10 @@ public class userService {
         return user.get();
     }
 
-    public List<profileCard> getProfileCard(String username) throws Exception {
-        Query query = new Query();
-        Query followQuery = new Query();
-
-
-        query.addCriteria(Criteria.where("username").regex(username, "i"));
-        List<User> users = mongoTemplate.find(query, User.class);
-        List<profileCard> profiles = new ArrayList<>();
-        if (users.isEmpty())
-            throw new Exception("No user found with this username");
-
-        for (User user : users) {
-            profileCard profile = new profileCard();
-
-            profile = convertToProfileCard(user);
-
-            profiles.add(profile);
-        }
-        return profiles;
+    public List<profileCard> getProfileCard(String username){
+        return mongoTemplate.find(
+                new Query(Criteria.where("username").regex(username, "i")),
+                profileCard.class);
     }
 
-    public profileCard convertToProfileCard(User user){
-        profileCard profile = new profileCard();
-
-        profile.setId(user.getId());
-        profile.setUsername(user.getUsername());
-        profile.setImageUrl(user.getImageUrl());
-        profile.setDob(user.getDob());
-        profile.setBio(user.getBio());
-        profile.setFollowers(user.getFollowers());
-        profile.setFollowings(user.getFollowings());
-        profile.setCreatedAt(user.getCreatedAt());
-        profile.setUpdatedAt(user.getUpdatedAt());
-        profile.setFollow(false);
-
-        return profile;
-    }
 }

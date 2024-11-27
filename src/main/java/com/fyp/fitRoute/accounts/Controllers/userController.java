@@ -1,6 +1,5 @@
 package com.fyp.fitRoute.accounts.Controllers;
 
-import com.fyp.fitRoute.accounts.Entity.follows;
 import com.fyp.fitRoute.accounts.Entity.profileCard;
 import com.fyp.fitRoute.external_Integrations.Services.firebaseService;
 import com.fyp.fitRoute.accounts.Services.followsService;
@@ -17,9 +16,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/Profile")
@@ -86,18 +83,10 @@ public class userController {
 
             User myProfile = uService.getProfile(authentication, "Your Profile not identified");
 
-            List<follows> followers = flwService.getFollowers(myProfile.getId());
-            List<profileCard> users = new ArrayList<>();
-            for (follows follower: followers){
-                Optional<User> user = uService.getUserById(follower.getFollowing());
-                if (user.isEmpty())
-                    continue;
-                profileCard profile = uService.convertToProfileCard(user.get());
-                profile.setFollow(flwService.checkFollow(myProfile.getId(), profile.getId()));
-                users.add(profile);
-            }
+            return new ResponseEntity<>(
+                    flwService.getFollowers(myProfile.getId()),
+                    HttpStatus.OK);
 
-            return new ResponseEntity<>(users, HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.NO_CONTENT);
         }
@@ -109,18 +98,11 @@ public class userController {
         try{
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             User myProfile = uService.getProfile(authentication, "Profile not found");
-            List<follows> followers = flwService.getFollowing(myProfile.getId());
-            List<profileCard> users = new ArrayList<>();
-            for (follows follower: followers){
-                Optional<User> user = uService.getUserById(follower.getFollowed());
-                if (user.isEmpty())
-                    continue;
-                profileCard profile = uService.convertToProfileCard(user.get());
-                profile.setFollow(flwService.checkFollow(myProfile.getId(), profile.getId()));
-                users.add(profile);
-            }
 
-            return new ResponseEntity<>(users, HttpStatus.OK);
+            return new ResponseEntity<>(
+                    flwService.getFollowing(myProfile.getId()),
+                    HttpStatus.OK);
+
         } catch (Exception e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.NO_CONTENT);
         }
@@ -165,9 +147,8 @@ public class userController {
             User myProfile = uService.getProfile(authentication, "Profile not found.");
             List<profileCard> users = uService.getProfileCard(username);
 
-            for (profileCard user: users){
-                user.setFollow(flwService.checkFollow(myProfile.getId(), user.getId()));
-            }
+            users.forEach(user ->
+                    user.setFollow(flwService.checkFollow(myProfile.getId(), user.getId())));
 
             return new ResponseEntity<>(users, HttpStatus.OK);
         } catch (Exception e){

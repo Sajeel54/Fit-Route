@@ -1,7 +1,9 @@
 package com.fyp.fitRoute.accounts.Services;
 
 import com.fyp.fitRoute.accounts.Entity.follows;
+import com.fyp.fitRoute.accounts.Entity.profileCard;
 import com.fyp.fitRoute.accounts.Repositories.followsRepo;
+import com.fyp.fitRoute.security.Entity.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -46,15 +48,31 @@ public class followsService{
         return found != null;
     }
 
-    public List<follows> getFollowers(String userId){
+    public List<profileCard> getFollowers(String userId){
         Query query = new Query();
         query.addCriteria(Criteria.where("followed").is(userId));
-        return mongoTemplate.find(query, follows.class);
+        List<String> followerIds = mongoTemplate.find(query, follows.class)
+                .stream()
+                .map(follows::getFollowing)
+                .toList();
+        query = new Query(Criteria.where("id").in(followerIds));
+        List<profileCard> followers = mongoTemplate.find(query, profileCard.class);
+        followers.forEach(follower ->
+                follower.setFollow(checkFollow(follower.getId(), userId)));
+        return followers;
     }
 
-    public List<follows> getFollowing(String userId){
+    public List<profileCard> getFollowing(String userId){
         Query query = new Query();
         query.addCriteria(Criteria.where("following").is(userId));
-        return mongoTemplate.find(query, follows.class);
+        List<String> followingIds = mongoTemplate.find(query, follows.class)
+                .stream()
+                .map(follows::getFollowed)
+                .toList();
+        query = new Query(Criteria.where("id").in(followingIds));
+        List<profileCard> followings = mongoTemplate.find(query, profileCard.class);
+        followings.forEach(follower ->
+                follower.setFollow(checkFollow(follower.getId(), userId)));
+        return followings;
     }
 }
