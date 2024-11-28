@@ -4,14 +4,12 @@ import lombok.Data;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-@Document( collection = "notifications" )
+@Document( collection = "userConfig" )
 @Data
-public class Notification {
+public class userConfig {
     @Id
     private String id;
-    private String from;
-    private String to;
-    private String title;
-    private String body;
-    private String reference;
+    private String username;
+    private String notificationsToken;
+    private int otp;
 }

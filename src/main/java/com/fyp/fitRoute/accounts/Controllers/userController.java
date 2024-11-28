@@ -38,7 +38,9 @@ public class userController {
         try {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             User user = uService.getProfile(authentication, "User not found");
-            String url = frbsService.upload(profilePicture, user.getUsername());
+            if (!(user.getImageUrl().isEmpty()))
+                frbsService.deleteImage(user.getUsername());
+            String url = frbsService.uploadImage(profilePicture, user.getUsername());
             user.setImageUrl(url);
             User updatedUser = uService.updateUser(user.getId(), user);
             return new ResponseEntity<>(updatedUser, HttpStatus.OK);

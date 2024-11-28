@@ -2,9 +2,11 @@ package com.fyp.fitRoute.external_Integrations.Services;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.cloud.storage.Blob;
 import com.google.cloud.storage.Bucket;
 import com.google.firebase.cloud.StorageClient;
 import com.google.firebase.messaging.FirebaseMessaging;
+import com.google.firebase.messaging.FirebaseMessagingException;
 import com.google.firebase.messaging.Message;
 import com.google.firebase.messaging.Notification;
 import org.springframework.beans.factory.annotation.Value;
@@ -24,12 +26,24 @@ public class firebaseService {
     @Value("${firebase-base-url}")
     private String imageBaseUrl;
 
-    public String upload(MultipartFile imageFile, String imageName) throws IOException, InterruptedException {
+    public String uploadImage(MultipartFile imageFile, String imageName) throws IOException, InterruptedException {
         InputStream inputStream = imageFile.getInputStream();
         Bucket bucket = StorageClient.getInstance().bucket();
         bucket.create(imageName, inputStream, "image/jpeg");
         String url = imageBaseUrl + imageName;
         return getImageUrl(url);
+    }
+
+    public String deleteImage(String imageName){
+        Bucket bucket = StorageClient.getInstance().bucket();
+        Blob blob = bucket.get(imageName);
+        if (blob != null && blob.exists()){
+            if (blob.delete())
+                return "Image deleted successfully";
+
+            throw new RuntimeException("Failed to delete image");
+        }
+        throw new RuntimeException("Image not found");
     }
 
     public String getImageUrl(String baseUrl) throws IOException, InterruptedException {
@@ -44,21 +58,17 @@ public class firebaseService {
         return baseUrl + "?alt=media&token=" + imageToken;
     }
 
-    public String sendNotification(String title, String body, String token) {
-        try {
-            Message message = Message.builder()
-                    .setToken(token)
-                    .setNotification(Notification.builder()
-                            .setTitle(title)
-                            .setBody(body)
-                            .build())
-                    .build();
+    public String sendNotification(String title, String body, String token) throws FirebaseMessagingException {
+        Message message = Message.builder()
+                .setToken(token)
+                .setNotification(Notification.builder()
+                        .setTitle(title)
+                        .setBody(body)
+                        .build())
+                .build();
 
-            String response = FirebaseMessaging.getInstance().send(message);
-            return "Successfully sent message: " + response;
-        } catch (Exception e) {
-            return "Error sending FCM message: " + e.getMessage();
-        }
+        String response = FirebaseMessaging.getInstance().send(message);
+        return "Successfully sent message: " + response;
     }
 
 }
