@@ -19,9 +19,10 @@ import java.util.concurrent.TimeUnit;
 @Service
 @NoArgsConstructor
 public class JwtUtils {
-    @Value("${jwt-secret}")
+    @Value("${jwt.secret}")
     private String SECRET;
-    private static final long VALIDITY = TimeUnit.MINUTES.toMillis(30);
+    @Value("${jwt.login-validity}")
+    private long loginExp;
 
     public String generateToken(UserDetails userDetails) {
         Map<String, String> claims = new HashMap<>();
@@ -31,7 +32,9 @@ public class JwtUtils {
                 .claims(claims)
                 .subject(userDetails.getUsername())
                 .issuedAt(Date.from(Instant.now()))
-                .expiration(Date.from(Instant.now().plusMillis(VALIDITY)))
+                .expiration(Date.from(Instant.now().plusMillis((
+                                TimeUnit.MINUTES.toMillis(loginExp)
+                        ))))
                 .signWith(generateKey())
                 .compact();
     }

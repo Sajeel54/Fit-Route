@@ -1,4 +1,4 @@
-package com.fyp.fitRoute.external_Integrations.Config;
+package com.fyp.fitRoute.inventory.Config;
 
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.info.Info;

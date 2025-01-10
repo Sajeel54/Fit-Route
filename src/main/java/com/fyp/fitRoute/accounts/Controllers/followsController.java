@@ -58,13 +58,13 @@ public class followsController {
             uService.addUser(followedData);
             follows follow =  flwService.addFollow(entry);
 
-            notificationService.deliverNotification(
-                    "Fit Route",
-                    myProfile.getUsername() + "Started following you",
-                    followedData.getUsername(),
-                    myProfile.getUsername(),
-                    ""
-            );
+//            notificationService.deliverNotification(
+//                    "Fit Route",
+//                    myProfile.getUsername() + "Started following you",
+//                    followedData.getUsername(),
+//                    myProfile.getUsername(),
+//                    ""
+//            );
             return new ResponseEntity<>(follow, HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);

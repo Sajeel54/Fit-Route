@@ -1,7 +1,7 @@
 package com.fyp.fitRoute.accounts.Controllers;
 
 import com.fyp.fitRoute.accounts.Entity.profileCard;
-import com.fyp.fitRoute.external_Integrations.Services.firebaseService;
+import com.fyp.fitRoute.inventory.Services.firebaseService;
 import com.fyp.fitRoute.accounts.Services.followsService;
 import com.fyp.fitRoute.accounts.Services.userService;
 import com.fyp.fitRoute.security.Entity.User;

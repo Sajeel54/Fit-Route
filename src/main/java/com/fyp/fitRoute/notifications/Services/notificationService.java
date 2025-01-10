@@ -1,6 +1,6 @@
 package com.fyp.fitRoute.notifications.Services;
 
-import com.fyp.fitRoute.external_Integrations.Services.firebaseService;
+import com.fyp.fitRoute.inventory.Services.firebaseService;
 import com.fyp.fitRoute.notifications.Entity.Notification;
 import com.fyp.fitRoute.notifications.Entity.userConfig;
 import com.fyp.fitRoute.notifications.Repositories.notificationRepo;
@@ -8,7 +8,6 @@ import com.fyp.fitRoute.notifications.Repositories.userConfigRepo;
 import com.google.firebase.messaging.FirebaseMessagingException;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;

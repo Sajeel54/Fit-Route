@@ -1,4 +1,4 @@
-package com.fyp.fitRoute.external_Integrations.Services;
+package com.fyp.fitRoute.inventory.Services;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -13,21 +13,35 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.util.Base64;
 
 @Service
 public class firebaseService {
-
-    @Value("${firebase-base-url}")
+    @Value("${firebase.image-base-url}")
     private String imageBaseUrl;
 
     public String uploadImage(MultipartFile imageFile, String imageName) throws IOException, InterruptedException {
         InputStream inputStream = imageFile.getInputStream();
+        Bucket bucket = StorageClient.getInstance().bucket();
+        bucket.create(imageName, inputStream, "image/jpeg");
+        String url = imageBaseUrl + imageName;
+        return getImageUrl(url);
+    }
+
+    public String uploadImage(String imageFile, String imageName) throws IOException, InterruptedException {
+        byte[] imageBytes = Base64.getDecoder().decode(imageFile);
+
+        // Convert to InputStream
+        InputStream inputStream = new ByteArrayInputStream(imageBytes);
+
+        // Upload to Firebase bucket
         Bucket bucket = StorageClient.getInstance().bucket();
         bucket.create(imageName, inputStream, "image/jpeg");
         String url = imageBaseUrl + imageName;
