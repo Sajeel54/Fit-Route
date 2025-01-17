@@ -4,36 +4,60 @@ import com.fyp.fitRoute.accounts.Entity.follows;
 import com.fyp.fitRoute.accounts.Entity.profileCard;
 import com.fyp.fitRoute.accounts.Repositories.followsRepo;
 import com.fyp.fitRoute.security.Entity.User;
+import com.fyp.fitRoute.security.Repositories.userCredentialsRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.util.List;
 
 @Service
 public class followsService{
     @Autowired
     private followsRepo flwRepo;
+    @Autowired
+    private userCredentialsRepo userRepo;
 
     @Autowired
     private MongoTemplate mongoTemplate;
 
-    public follows addFollow(follows entry){
+    @Transactional
+    public follows addFollow(User follower, User followed){
+        follows entry = new follows();
+
+        if (followed.getId() == follower.getId())
+            throw new RuntimeException("user unable of being followed");
+
+        entry.setFollowing(follower.getId());
+        entry.setFollowed(followed.getId());
+        follower.setFollowings(((follower.getFollowings())+1));
+        followed.setFollowers(((followed.getFollowers())+1));
+        userRepo.save(follower);
+        userRepo.save(followed);
         return flwRepo.save(entry);
     }
 
-    public boolean deleteFollow(String searchId, String myUserId) throws Exception {
+    @Transactional
+    public boolean deleteFollow(User follower, User followed) throws Exception {
         Query query = new Query();
-        query.addCriteria(Criteria.where("following").is(myUserId));
-        query.addCriteria(Criteria.where("followed").is(searchId));
+        query.addCriteria(Criteria.where("following").is(follower.getId()));
+        query.addCriteria(Criteria.where("followed").is(followed.getId()));
         follows found = mongoTemplate.findOne(query, follows.class);
 
         if (found == null)
-            throw new Exception("You do not follow this user");
+            throw new RuntimeException("You do not follow this user");
 
+        follower.setFollowers(follower.getFollowers()-1);
+        followed.setFollowers(followed.getFollowers()-1);
+        userRepo.save(follower);
+        userRepo.save(followed);
         flwRepo.delete(found);
         found = mongoTemplate.findOne(query, follows.class);
+        if (found != null)
+            throw new RuntimeException("");
 
         return found == null;
     }

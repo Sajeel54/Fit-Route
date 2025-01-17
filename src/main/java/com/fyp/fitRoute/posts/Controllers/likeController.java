@@ -1,0 +1,60 @@
+package com.fyp.fitRoute.posts.Controllers;
+
+import com.fyp.fitRoute.accounts.Services.userService;
+import com.fyp.fitRoute.posts.Entity.likes;
+import com.fyp.fitRoute.posts.Services.likeService;
+import com.fyp.fitRoute.posts.Utilities.likeResponse;
+import com.fyp.fitRoute.security.Entity.User;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+@RestController
+@RequestMapping("/likes")
+public class likeController {
+    @Autowired
+    private likeService likeService;
+    @Autowired
+    private userService userService;
+
+    @GetMapping
+    public ResponseEntity<?> getLikes(@RequestParam String postId){
+        try {
+            List<likeResponse> likes = likeService.getByPostId(postId);
+            return new ResponseEntity<>(
+                    likes,
+                    HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @PostMapping
+    public ResponseEntity<?> addLike(String postId){
+        try {
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            User myProfile = userService.getProfile(authentication, "your profile not identified");
+            likes like = likeService.addLike(postId, myProfile.getId());
+            return new ResponseEntity<>(like, HttpStatus.OK);
+        } catch (Exception e){
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @DeleteMapping
+    public ResponseEntity<?> deleteLike(String postId){
+        try {
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            User myProfile = userService.getProfile(authentication, "your profile not identified");
+            likeService.deleteLike(postId, myProfile.getId());
+            return new ResponseEntity<>(HttpStatus.OK);
+        } catch (Exception e){
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+    }
+}

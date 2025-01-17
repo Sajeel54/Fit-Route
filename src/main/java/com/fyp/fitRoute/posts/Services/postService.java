@@ -3,12 +3,9 @@ package com.fyp.fitRoute.posts.Services;
 import com.fyp.fitRoute.inventory.Services.firebaseService;
 import com.fyp.fitRoute.posts.Entity.posts;
 import com.fyp.fitRoute.posts.Repositories.postRepo;
-import com.fyp.fitRoute.posts.Utilities.postRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -20,7 +17,7 @@ public class postService {
     @Autowired
     private firebaseService firebaseService;
 
-    public posts addPost(posts newPost) throws IOException, InterruptedException {
+    public posts addPost(posts newPost) {
         posts post = pRepo.save(newPost);
         List<String> imageUrls = new ArrayList<>();
 /*

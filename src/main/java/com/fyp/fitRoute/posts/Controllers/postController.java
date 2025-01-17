@@ -13,7 +13,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.time.Instant;
 import java.util.Date;
@@ -43,7 +42,7 @@ public class postController {
 
             posts newPost = pService.addPost(new posts(
                     null, 0, 0, newRoute.getId(), myProfile.getId(),
-                    body.getDescription(), body.getTags(), body.getImages(), date, date
+                    body.getDescription(), body.getTags(), body.getImages(),body.getCategory(), date, date
             ));
 
             return new ResponseEntity<>(newPost, HttpStatus.OK);

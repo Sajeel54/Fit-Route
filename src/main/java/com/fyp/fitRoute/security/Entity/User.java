@@ -1,8 +1,8 @@
 package com.fyp.fitRoute.security.Entity;
 
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.NonNull;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -15,10 +15,10 @@ import java.util.Date;
 public class User {
     @Id
     private String id;
-    @NonNull
+    @NotNull
     @Indexed(unique = true)
     private String username;
-    @NonNull
+    @NotNull
     private String password;
     private String imageUrl;
     private String role;
