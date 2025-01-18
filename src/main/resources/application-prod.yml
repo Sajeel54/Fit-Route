@@ -10,6 +10,11 @@ spring:
       database: fitRoute
       auto-index-creation: true
 
+    redis:
+      host: ${REDIS_HOST}
+      port: 17802
+      password: ${REDIS_PASSWORD}
+
   servlet:
     multipart:
       max-file-size: ${ file_size }

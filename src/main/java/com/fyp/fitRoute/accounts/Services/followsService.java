@@ -12,6 +12,8 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Instant;
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -27,12 +29,14 @@ public class followsService{
     @Transactional
     public follows addFollow(User follower, User followed){
         follows entry = new follows();
+        Date date = Date.from(Instant.now());
 
         if (followed.getId() == follower.getId())
             throw new RuntimeException("user unable of being followed");
 
         entry.setFollowing(follower.getId());
         entry.setFollowed(followed.getId());
+        entry.setCreatedAt(date);
         follower.setFollowings(((follower.getFollowings())+1));
         followed.setFollowers(((followed.getFollowers())+1));
         userRepo.save(follower);
