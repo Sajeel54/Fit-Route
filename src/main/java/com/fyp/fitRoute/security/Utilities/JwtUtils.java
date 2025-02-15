@@ -16,7 +16,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
-@Service
+@Component
 @NoArgsConstructor
 public class JwtUtils {
     @Value("${jwt.secret}")
