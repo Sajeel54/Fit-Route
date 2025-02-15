@@ -2,7 +2,7 @@ spring:
 
   data:
     mongodb:
-      uri: ${ Database_Con }
+      uri: ${Database_Con}
       database: fitRoute
       auto-index-creation: true
 
@@ -13,19 +13,19 @@ spring:
 
   servlet:
     multipart:
-      max-file-size: ${ file_size }
-      max-request-size: ${ request_size }
+      max-file-size: ${file_size}
+      max-request-size: ${request_size}
 
 # swagger-ui custom path
 springdoc:
   swagger-ui:
-    path: ${ swagger_path }
+    path: ${swagger_path}
 
 firebase:
-  image-base-url: ${ firebase_image_base_url }
-  storage-bucket: ${ firebase_storage_bucket }
-  credentials: ${ firebase_credentials }
+  image-base-url: ${firebase_image_base_url}
+  storage-bucket: ${firebase_storage_bucket}
+  credentials: ${firebase_credentials}
 
 jwt:
-  secret: ${ JWT_key }
-  login-validity: ${ JWT_Login_Validity }
+  secret: ${JWT_key}
+  login-validity: ${JWT_Login_Validity}
