@@ -15,19 +15,11 @@ spring:
     multipart:
       max-file-size: ${file_size}
       max-request-size: ${request_size}
-  mvc:
-    pathmatch:
-      matching-strategy: ANT_PATH_MATCHER
 
 # swagger-ui custom path
 springdoc:
   swagger-ui:
     path: ${swagger_path}
-    enabled: true
-
-  api-docs:
-    enabled: true
-
 
 firebase:
   image-base-url: ${firebase_image_base_url}
@@ -37,8 +29,3 @@ firebase:
 jwt:
   secret: ${JWT_key}
   login-validity: ${JWT_Login_Validity}
-
-server:
-  error:
-    include-message: always
-
