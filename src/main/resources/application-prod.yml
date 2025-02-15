@@ -1,8 +1,4 @@
 spring:
-  security:
-    user:
-      name: ${ login_username }
-      password: ${ login_password }
 
   data:
     mongodb:

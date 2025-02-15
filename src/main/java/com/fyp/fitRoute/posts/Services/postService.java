@@ -11,6 +11,7 @@ import com.fyp.fitRoute.posts.Repositories.postRepo;
 import com.fyp.fitRoute.posts.Repositories.routeRepo;
 import com.fyp.fitRoute.posts.Utilities.postRequest;
 import com.fyp.fitRoute.posts.Utilities.postResponse;
+import com.fyp.fitRoute.security.Entity.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -70,15 +71,21 @@ public class postService {
         Map<String, postResponse> feed = mongoTemplate.find(query, posts.class)
                 .stream()
                 .collect(Collectors.toMap(
-                        posts::getId, post -> new postResponse(
-                                post.getId(), post.getLikes(), post.getComments(), post.getDescription(),
-                                post.getAccountId(), post.getTags(), post.getImages(), post.getCategory(),
-                                post.getCreatedAt(), post.getUpdatedAt(),
-                                checkLike(post.getId(), post.getAccountId()),
-                                mongoTemplate.findOne(
-                                        new Query(Criteria.where("").is(post.getRouteId())), route.class
-                                )
-                        )
+                        posts::getId, post -> {
+                            User user = mongoTemplate.findOne(new Query(Criteria.where("id").is(post.getAccountId())), User.class);
+                            if (user == null)
+                                throw new RuntimeException("User not found");
+                            return new postResponse(
+                                    post.getId(), post.getLikes(), post.getComments(),
+                                    user.getUsername(), user.getImageUrl(), post.getDescription(),
+                                    post.getTags(), post.getImages(), post.getCategory(),
+                                    post.getCreatedAt(), post.getUpdatedAt(),
+                                    checkLike(post.getId(), post.getAccountId()),
+                                    mongoTemplate.findOne(
+                                            new Query(Criteria.where("").is(post.getRouteId())), route.class
+                                    )
+                            );
+                        }
                 ));
         Map<String, postResponse> newFeed = new HashMap<>();
         for (String accountId : recentFollowingIds) {
@@ -89,15 +96,21 @@ public class postService {
             newFeed = mongoTemplate.find(query, posts.class)
                     .stream()
                     .collect(Collectors.toMap(
-                            posts::getId, post -> new postResponse(
-                                    post.getId(), post.getLikes(), post.getComments(), post.getDescription(),
-                                    post.getAccountId(), post.getTags(), post.getImages(), post.getCategory(),
-                                    post.getCreatedAt(), post.getUpdatedAt(),
-                                    checkLike(post.getId(), post.getAccountId()),
-                                    mongoTemplate.findOne(
-                                            new Query(Criteria.where("").is(post.getRouteId())), route.class
-                                    )
-                            )
+                            posts::getId, post -> {
+                                User user = mongoTemplate.findOne(new Query(Criteria.where("id").is(post.getAccountId())), User.class);
+                                if (user == null)
+                                    throw new RuntimeException("User not found");
+                                return new postResponse(
+                                        post.getId(), post.getLikes(), post.getComments(),
+                                        user.getUsername(), user.getImageUrl(),
+                                        post.getDescription(), post.getTags(), post.getImages(),
+                                        post.getCategory(), post.getCreatedAt(), post.getUpdatedAt(),
+                                        checkLike(post.getId(), post.getAccountId()),
+                                        mongoTemplate.findOne(
+                                                new Query(Criteria.where("").is(post.getRouteId())), route.class
+                                        )
+                                );
+                            }
                     ));
 
         }
@@ -113,14 +126,19 @@ public class postService {
     public List<postResponse> getUserPosts(String accountId){
         return pRepo.findByAccountId(accountId)
                 .stream()
-                .map(post ->
-                        new postResponse(
-                                post.getId(),post.getLikes(), post.getComments(),
-                                post.getAccountId(), post.getDescription(), post.getTags(), post.getImages(),
-                                post.getCategory(), post.getCreatedAt(), post.getUpdatedAt(),
-                                checkLike(post.getId(), accountId),
-                                rRepo.findById(post.getRouteId()).orElse(null)
-                        ))
+                .map(post -> {
+                    User user = mongoTemplate.findOne(new Query(Criteria.where("id").is(post.getAccountId())), User.class);
+                    if (user == null)
+                        throw new RuntimeException("User not found");
+                    return new postResponse(
+                            post.getId(),post.getLikes(), post.getComments(),
+                            user.getUsername(), user.getImageUrl(), post.getDescription(),
+                            post.getTags(), post.getImages(), post.getCategory(),
+                            post.getCreatedAt(), post.getUpdatedAt(),
+                            checkLike(post.getId(), accountId),
+                            rRepo.findById(post.getRouteId()).orElse(null)
+                    );
+                })
                 .toList();
     }
 

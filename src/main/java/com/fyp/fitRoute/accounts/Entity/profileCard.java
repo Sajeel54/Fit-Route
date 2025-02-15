@@ -20,4 +20,17 @@ public class profileCard {
     private boolean follow;
     private Date createdAt;
     private Date updatedAt;
+
+    public profileCard(String username, boolean follow){
+        this.id = "";
+        this.username = username;
+        this.imageUrl = "";
+        this.dob = null;
+        this.bio = "";
+        this.followers = 0;
+        this.followings = 0;
+        this.follow = follow;
+        this.createdAt = null;
+        this.updatedAt = null;
+    }
 }

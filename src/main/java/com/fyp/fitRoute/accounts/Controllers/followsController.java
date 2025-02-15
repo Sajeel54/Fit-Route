@@ -60,7 +60,6 @@ public class followsController {
     public ResponseEntity<?> unfollowUser(@RequestParam String username){
         try {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-            String name = authentication.getName();
 
             User myProfile = uService.getProfile(authentication, "your profile not identified");
             Optional<User> followed = uService.getUserByName(username);

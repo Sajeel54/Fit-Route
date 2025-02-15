@@ -2,6 +2,10 @@ package com.fyp.fitRoute.accounts.Services;
 
 import com.fyp.fitRoute.accounts.Entity.follows;
 import com.fyp.fitRoute.accounts.Entity.profileCard;
+import com.fyp.fitRoute.posts.Entity.comments;
+import com.fyp.fitRoute.posts.Entity.likes;
+import com.fyp.fitRoute.posts.Entity.posts;
+import com.fyp.fitRoute.posts.Entity.route;
 import com.fyp.fitRoute.security.Entity.User;
 import com.fyp.fitRoute.security.Repositories.userCredentialsRepo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,7 +17,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -63,7 +66,7 @@ public class userService {
         return userRepo.save(user);
     }
 
-
+    @Transactional
     public boolean deleteUsers(String id) {
         Query followingQuery = new Query(Criteria.where("following").is(id));
         List<String> followingRecords = mongoTemplate.find(followingQuery, follows.class)
@@ -89,8 +92,19 @@ public class userService {
                 Criteria.where("following").is(id),
                 Criteria.where("followed").is(id)
         ));
-        mongoTemplate.findAllAndRemove(deleteFollowsQuery, follows.class);
 
+        mongoTemplate.findAllAndRemove(deleteFollowsQuery, follows.class);
+        mongoTemplate.findAllAndRemove(new Query(Criteria.where("accountId").is(id)), comments.class);
+        mongoTemplate.findAllAndRemove(new Query(Criteria.where("accountId").is(id)), likes.class);
+
+        List<posts> posts = mongoTemplate.findAllAndRemove(new Query(Criteria.where("accountId").is(id)), posts.class);
+        List<String> routeIds = posts.stream().map(com.fyp.fitRoute.posts.Entity.posts::getRouteId).toList();
+        List<String> postIds = posts.stream().map(com.fyp.fitRoute.posts.Entity.posts::getId).toList();
+
+        mongoTemplate.findAllAndRemove(new Query(Criteria.where("id").in(routeIds)), route.class);
+        mongoTemplate.findAllAndRemove(new Query(Criteria.where("postId").in(postIds)), comments.class);
+        mongoTemplate.findAllAndRemove(new Query(Criteria.where("postId").in(postIds)), likes.class);
+        
         userRepo.findById(id).ifPresent(userRepo::delete);
 
         return userRepo.findById(id).isEmpty();

@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -84,9 +85,15 @@ public class followsService{
                 .map(follows::getFollowing)
                 .toList();
         query = new Query(Criteria.where("id").in(followerIds));
-        List<profileCard> followers = mongoTemplate.find(query, profileCard.class);
-        followers.forEach(follower ->
-                follower.setFollow(checkFollow(follower.getId(), userId)));
+        List<profileCard> queryFollowers = mongoTemplate.find(query, profileCard.class);
+        List<profileCard> followers = new ArrayList<>();
+        queryFollowers.forEach(follower -> {
+                follower.setFollow(checkFollow(userId, follower.getId()));
+            if (followerIds.contains(follower.getId()))
+                followers.add(follower);
+            else
+                followers.add(new profileCard());
+        });
         return followers;
     }
 
@@ -98,9 +105,15 @@ public class followsService{
                 .map(follows::getFollowed)
                 .toList();
         query = new Query(Criteria.where("id").in(followingIds));
+        List<profileCard> queryFollowings = mongoTemplate.find(query, profileCard.class);
         List<profileCard> followings = mongoTemplate.find(query, profileCard.class);
-        followings.forEach(follower ->
-                follower.setFollow(checkFollow(follower.getId(), userId)));
+        queryFollowings.forEach(followed -> {
+            followed.setFollow(true);
+            if (followingIds.contains(followed.getId()))
+                followings.add(followed);
+            else
+                followings.add(new profileCard("Username", true));
+        });
         return followings;
     }
 }

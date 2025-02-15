@@ -17,7 +17,8 @@ public class postResponse {
     private String id;
     private int likes; // Number of likes the post has received
     private int comments; // Number of comments on the post
-    private String accountId; // User account/ID that created the post
+    private String username; // User account/ID that created the post
+    private String profilePic;
     private String description; // Detailed description of the post
     private List<String> tags; // Tags associated with the post for categorization
     private List<String> images; //Urls of images uploaded bby user
