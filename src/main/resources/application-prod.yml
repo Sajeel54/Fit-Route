@@ -20,6 +20,11 @@ spring:
 springdoc:
   swagger-ui:
     path: ${swagger_path}
+    enabled: true
+
+  api-docs:
+    enabled: true
+
 
 firebase:
   image-base-url: ${firebase_image_base_url}
