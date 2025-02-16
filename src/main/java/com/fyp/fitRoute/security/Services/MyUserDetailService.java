@@ -17,7 +17,7 @@ import java.util.logging.Logger;
 @NoArgsConstructor
 public class MyUserDetailService implements UserDetailsService {
 
-    private static final Logger logger = LoggerFactory.getLogger(MyUserDetailService.class);
+    private static final Logger logger = (Logger) LoggerFactory.getLogger(MyUserDetailService.class);
     @Autowired
     private userCredentialsRepo repository;
 
