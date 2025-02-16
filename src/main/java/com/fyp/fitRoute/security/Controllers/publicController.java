@@ -81,7 +81,7 @@ public class publicController {
                 throw new UsernameNotFoundException("Invalid credentials");
             }
         } catch (Exception e){
-            return new ResponseEntity<>("Invalid username or password", HttpStatus.UNAUTHORIZED);
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.UNAUTHORIZED);
         }
     }
 
