@@ -8,6 +8,8 @@ import com.fyp.fitRoute.security.Utilities.loginRequest;
 import com.fyp.fitRoute.security.Utilities.signupRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,6 +26,7 @@ import java.util.Date;
 @RestController
 @RequestMapping("/public")
 @Tag( name="Public Controller" , description = "These endpoints are public and require no Authentication")
+@Slf4j
 public class publicController {
 
     @Autowired
@@ -73,6 +76,7 @@ public class publicController {
                         HttpStatus.OK
                 );
             } else {
+                log.info(loginForm.getUsername() + "" + loginForm.getPassword());
                 throw new UsernameNotFoundException("Invalid credentials");
             }
         } catch (Exception e){
