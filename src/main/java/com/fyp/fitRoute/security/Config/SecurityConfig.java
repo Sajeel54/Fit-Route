@@ -39,8 +39,9 @@ public class SecurityConfig {
                         .requestMatchers("/user/**").hasRole("USER")
                         .anyRequest().authenticated()
                 )
-                .httpBasic(Customizer.withDefaults())
-                .addFilterBefore(authFilter, UsernamePasswordAuthenticationFilter.class)
+                .formLogin(Customizer.withDefaults()) // ✅ Enable login form authentication
+                .httpBasic(Customizer.withDefaults()) // ✅ Keep basic auth
+                .addFilterBefore(authFilter, UsernamePasswordAuthenticationFilter.class) // ✅ Add JWT/Auth filter
                 .build();
     }
 

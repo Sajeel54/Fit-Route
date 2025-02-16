@@ -76,7 +76,7 @@ public class publicController {
                         HttpStatus.OK
                 );
             } else {
-                log.info(loginForm.getUsername() + "" + loginForm.getPassword());
+                log.info(loginForm.getUsername() + ":" + loginForm.getPassword());
                 throw new UsernameNotFoundException("Invalid credentials");
             }
         } catch (Exception e){
