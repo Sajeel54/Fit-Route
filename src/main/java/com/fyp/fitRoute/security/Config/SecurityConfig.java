@@ -2,18 +2,16 @@ package com.fyp.fitRoute.security.Config;
 
 import com.fyp.fitRoute.security.Services.MyUserDetailService;
 import com.fyp.fitRoute.security.Utilities.AuthFilter;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
-import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.Customizer;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -23,30 +21,32 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableWebSecurity
 public class SecurityConfig {
 
-    @Autowired
-    private MyUserDetailService userDetailService;
-    @Autowired
-    private AuthFilter authFilter;
+    private final MyUserDetailService userDetailService;
+    private final AuthFilter authFilter;
 
-    @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception{
-        httpSecurity.csrf(AbstractHttpConfigurer::disable);
-        httpSecurity.authorizeHttpRequests(request -> {
-            request.requestMatchers(
-                    "/public/**", "/", "/swagger-ui/**", "/v3/api-docs/**"
-            ).permitAll();
-            request.requestMatchers("/admin/**").hasRole("ADMIN");
-            request.requestMatchers("/user/**").hasRole("USER");
-            request.anyRequest().authenticated();
-        });
-        httpSecurity.httpBasic(Customizer.withDefaults());
-        httpSecurity.addFilterBefore(authFilter, UsernamePasswordAuthenticationFilter.class);
-        return httpSecurity.build();
+    public SecurityConfig(MyUserDetailService userDetailService, AuthFilter authFilter) {
+        this.userDetailService = userDetailService;
+        this.authFilter = authFilter;
     }
 
     @Bean
-    public UserDetailsService userDetailsService() {
-        return userDetailService;
+    public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
+        return httpSecurity
+                .csrf(AbstractHttpConfigurer::disable)
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/public/**", "/", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
+                        .requestMatchers("/admin/**").hasRole("ADMIN")
+                        .requestMatchers("/user/**").hasRole("USER")
+                        .anyRequest().authenticated()
+                )
+                .httpBasic(Customizer.withDefaults())
+                .addFilterBefore(authFilter, UsernamePasswordAuthenticationFilter.class)
+                .build();
+    }
+
+    @Bean
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
+        return authenticationConfiguration.getAuthenticationManager();
     }
 
     @Bean
@@ -58,14 +58,7 @@ public class SecurityConfig {
     }
 
     @Bean
-    public AuthenticationManager authenticationManager() {
-        return new ProviderManager(authenticationProvider());
-    }
-
-    @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
-
-
 }
