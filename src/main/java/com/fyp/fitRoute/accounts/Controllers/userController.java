@@ -1,6 +1,7 @@
 package com.fyp.fitRoute.accounts.Controllers;
 
 import com.fyp.fitRoute.accounts.Entity.profileCard;
+import com.fyp.fitRoute.accounts.profileRequest;
 import com.fyp.fitRoute.inventory.Services.firebaseService;
 import com.fyp.fitRoute.accounts.Services.followsService;
 import com.fyp.fitRoute.accounts.Services.userService;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/Profile")
@@ -92,6 +94,23 @@ public class userController {
 
         } catch (Exception e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.NO_CONTENT);
+        }
+    }
+
+    @PostMapping("createProfile")
+    @Operation( summary="set up profile after signup" )
+    public ResponseEntity<?> setUpProfile(@RequestBody profileRequest pRequest){
+        try {
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            String name = authentication.getName();
+
+            User myProfile = uService.getProfile(authentication, "Your Profile not identified");
+
+            User user = uService.setUpAccount(pRequest ,myProfile);
+
+            return new ResponseEntity<>(user, HttpStatus.OK);
+        } catch (Exception e){
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.OK);
         }
     }
 

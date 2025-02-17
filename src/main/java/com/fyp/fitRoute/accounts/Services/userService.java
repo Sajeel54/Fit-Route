@@ -2,6 +2,7 @@ package com.fyp.fitRoute.accounts.Services;
 
 import com.fyp.fitRoute.accounts.Entity.follows;
 import com.fyp.fitRoute.accounts.Entity.profileCard;
+import com.fyp.fitRoute.accounts.profileRequest;
 import com.fyp.fitRoute.posts.Entity.comments;
 import com.fyp.fitRoute.posts.Entity.likes;
 import com.fyp.fitRoute.posts.Entity.posts;
@@ -51,10 +52,27 @@ public class userService {
         user.setUpdatedAt(Date.from(Instant.now()));
         user.setUsername(userDetails.getUsername().isEmpty()?
                 user.getUsername() : userDetails.getUsername());
+        user.setFirstName(userDetails.getFirstName().isEmpty()?
+                user.getFirstName() : userDetails.getFirstName());
+        user.setLastName(userDetails.getLastName().isEmpty()?
+                user.getLastName() : userDetails.getLastName());
         user.setPassword(userDetails.getPassword().isEmpty()?
                 user.getPassword() : userDetails.getPassword());
         user.setEmail(userDetails.getEmail().isEmpty()?
                 user.getEmail() : userDetails.getEmail());
+        user.setDob(userDetails.getDob() == null ?
+                user.getDob() : userDetails.getDob());
+        user.setBio(userDetails.getBio().isEmpty()?
+                user.getBio() : userDetails.getBio());
+        user.setGender(userDetails.getGender().isEmpty()?
+                user.getGender() : userDetails.getGender());
+        user.setImage(userDetails.getImage().isEmpty()?
+                user.getImage() : userDetails.getImage());
+        return userRepo.save(user);
+    }
+
+    public User setUpAccount(profileRequest userDetails, User user){
+        user.setUpdatedAt(Date.from(Instant.now()));
         user.setDob(userDetails.getDob() == null ?
                 user.getDob() : userDetails.getDob());
         user.setBio(userDetails.getBio().isEmpty()?
