@@ -108,7 +108,7 @@ public class userController {
 
             User user = uService.setUpAccount(pRequest ,myProfile);
 
-            return new ResponseEntity<>(user, HttpStatus.OK);
+            return new ResponseEntity<>("Profile created successfully!", HttpStatus.OK);
         } catch (Exception e){
             return new ResponseEntity<>(e.getMessage(), HttpStatus.OK);
         }
