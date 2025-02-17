@@ -67,7 +67,7 @@ public class publicController {
             if (authentication.isAuthenticated()) {
                 String generatedToken = jwtService.generateToken(myUserDetailService.loadUserByUsername(loginForm.getUsername()));
                 return new ResponseEntity<>(
-                        new loginResponse(),
+                        new loginResponse(generatedToken),
                         HttpStatus.OK
                 );
             } else {
