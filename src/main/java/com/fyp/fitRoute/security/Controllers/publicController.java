@@ -5,7 +5,6 @@ import com.fyp.fitRoute.security.Entity.User;
 import com.fyp.fitRoute.security.Services.MyUserDetailService;
 import com.fyp.fitRoute.security.Utilities.JwtUtils;
 import com.fyp.fitRoute.security.Utilities.loginRequest;
-import com.fyp.fitRoute.security.Utilities.loginResponse;
 import com.fyp.fitRoute.security.Utilities.signupRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -71,9 +70,8 @@ public class publicController {
                     loginForm.getUsername(), loginForm.getPassword()
             ));
             if (authentication.isAuthenticated()) {
-                String token = jwtService.generateToken(myUserDetailService.loadUserByUsername(loginForm.getUsername()));
                 return new ResponseEntity<>(
-                        new loginResponse(token),
+                        jwtService.generateToken(myUserDetailService.loadUserByUsername(loginForm.getUsername())),
                         HttpStatus.OK
                 );
             } else {
