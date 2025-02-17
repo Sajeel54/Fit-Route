@@ -8,9 +8,6 @@ import com.fyp.fitRoute.security.Utilities.loginRequest;
 import com.fyp.fitRoute.security.Utilities.signupRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -29,7 +26,6 @@ import java.util.Date;
 @Tag( name="Public Controller" , description = "These endpoints are public and require no Authentication")
 public class publicController {
 
-    private static final Logger logger = LoggerFactory.getLogger(publicController.class);
     @Autowired
     private AuthenticationManager authenticationManager;
     @Autowired
@@ -64,7 +60,7 @@ public class publicController {
         }
     }
 
-    @GetMapping("/login")
+    @PostMapping("/login")
     @Operation( summary = "Login your account" )
     public ResponseEntity<?> authenticateAndGetToken(@RequestBody loginRequest loginForm) {
         try{
@@ -77,7 +73,6 @@ public class publicController {
                         HttpStatus.OK
                 );
             } else {
-                logger.info(loginForm.getUsername() + ":" + loginForm.getPassword());
                 throw new UsernameNotFoundException("Invalid credentials");
             }
         } catch (Exception e){
