@@ -17,7 +17,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/Profile")
@@ -96,7 +95,7 @@ public class userController {
         }
     }
 
-    @PostMapping("createProfile")
+    @PostMapping("/createProfile")
     @Operation( summary="set up profile after signup" )
     public ResponseEntity<?> setUpProfile(@RequestBody profileRequest pRequest){
         try {
