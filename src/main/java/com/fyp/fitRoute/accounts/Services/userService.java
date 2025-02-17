@@ -61,8 +61,8 @@ public class userService {
                 user.getBio() : userDetails.getBio());
         user.setGender(userDetails.getGender().isEmpty()?
                 user.getGender() : userDetails.getGender());
-        user.setImageUrl(userDetails.getImageUrl().isEmpty()?
-                user.getImageUrl() : userDetails.getImageUrl());
+        user.setImage(userDetails.getImage().isEmpty()?
+                user.getImage() : userDetails.getImage());
         return userRepo.save(user);
     }
 

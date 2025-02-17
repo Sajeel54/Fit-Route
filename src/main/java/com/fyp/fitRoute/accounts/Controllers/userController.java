@@ -32,22 +32,7 @@ public class userController {
     private firebaseService frbsService;
 
 
-    @PostMapping("/upload-picture")
-    @Operation( summary = "upload your profile picture")
-    public ResponseEntity<?> uploadProfilePicture(@RequestParam("image")MultipartFile profilePicture){
-        try {
-            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-            User user = uService.getProfile(authentication, "User not found");
-            if (!(user.getImageUrl().isEmpty()))
-                frbsService.deleteImage(user.getUsername());
-            String url = frbsService.uploadImage(profilePicture, user.getUsername());
-            user.setImageUrl(url);
-            User updatedUser = uService.updateUser(user.getId(), user);
-            return new ResponseEntity<>(updatedUser, HttpStatus.OK);
-        } catch (Exception e){
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
-        }
-    }
+
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/ADMIN")
     @Operation( summary = "Get All Users" )

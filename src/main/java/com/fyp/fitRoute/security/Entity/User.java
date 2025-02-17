@@ -20,7 +20,11 @@ public class User {
     private String username;
     @NotNull
     private String password;
-    private String imageUrl;
+    @NotNull
+    private String firstName;
+    @NotNull
+    private String lastName;
+    private String image;
     private String role;
     private String email;
     private Date dob;

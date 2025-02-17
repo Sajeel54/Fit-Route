@@ -12,6 +12,12 @@ public class signupRequest {
     @NotEmpty
     private String password;
     @NotEmpty
+    private String firstName;
+    @NotEmpty
+    private String lastName;
+    @NotEmpty
+    private String image;
+    @NotEmpty
     private String email;
     @NotEmpty
     private Date dob;

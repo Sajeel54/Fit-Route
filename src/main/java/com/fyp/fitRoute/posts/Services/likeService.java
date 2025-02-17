@@ -55,7 +55,7 @@ public class likeService {
                     return new likeResponse(
                             like.getId(),
                             user.getUsername(),
-                            user.getImageUrl(),
+                            user.getImage(),
                             like.getPostId(),
                             like.getCreatedAt(),
                             like.getUpdatedAt()

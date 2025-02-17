@@ -77,7 +77,7 @@ public class postService {
                                 throw new RuntimeException("User not found");
                             return new postResponse(
                                     post.getId(), post.getLikes(), post.getComments(),
-                                    user.getUsername(), user.getImageUrl(), post.getDescription(),
+                                    user.getUsername(), user.getImage(), post.getDescription(),
                                     post.getTags(), post.getImages(), post.getCategory(),
                                     post.getCreatedAt(), post.getUpdatedAt(),
                                     checkLike(post.getId(), post.getAccountId()),
@@ -102,7 +102,7 @@ public class postService {
                                     throw new RuntimeException("User not found");
                                 return new postResponse(
                                         post.getId(), post.getLikes(), post.getComments(),
-                                        user.getUsername(), user.getImageUrl(),
+                                        user.getUsername(), user.getImage(),
                                         post.getDescription(), post.getTags(), post.getImages(),
                                         post.getCategory(), post.getCreatedAt(), post.getUpdatedAt(),
                                         checkLike(post.getId(), post.getAccountId()),
@@ -132,7 +132,7 @@ public class postService {
                         throw new RuntimeException("User not found");
                     return new postResponse(
                             post.getId(),post.getLikes(), post.getComments(),
-                            user.getUsername(), user.getImageUrl(), post.getDescription(),
+                            user.getUsername(), user.getImage(), post.getDescription(),
                             post.getTags(), post.getImages(), post.getCategory(),
                             post.getCreatedAt(), post.getUpdatedAt(),
                             checkLike(post.getId(), accountId),

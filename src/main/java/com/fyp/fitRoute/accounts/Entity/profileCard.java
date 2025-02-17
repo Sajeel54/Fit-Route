@@ -12,7 +12,9 @@ import java.util.Date;
 public class profileCard {
     private String id;
     private String username;
-    private String imageUrl;
+    private String firstName;
+    private String lastName;
+    private String image;
     private Date dob;
     private String bio;
     private int followers;
@@ -24,7 +26,7 @@ public class profileCard {
     public profileCard(String username, boolean follow){
         this.id = "";
         this.username = username;
-        this.imageUrl = "";
+        this.image = "";
         this.dob = null;
         this.bio = "";
         this.followers = 0;

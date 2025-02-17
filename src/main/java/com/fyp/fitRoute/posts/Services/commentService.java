@@ -60,7 +60,7 @@ public class commentService {
                     return new commentResponse(
                             comment.getId(),
                             user.getUsername(),
-                            user.getImageUrl(),
+                            user.getImage(),
                             comment.getPostId(),
                             comment.getBody(),
                             comment.getCreatedAt(),
