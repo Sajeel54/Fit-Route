@@ -48,28 +48,41 @@ public class userService {
     }
 
     public User updateUser(String id, User userDetails) {
-        User user = userRepo.findById(id).orElseThrow(() -> new RuntimeException("User not found"));
-        user.setUpdatedAt(Date.from(Instant.now()));
-        user.setUsername(userDetails.getUsername().isEmpty()?
-                user.getUsername() : userDetails.getUsername());
-        user.setFirstName(userDetails.getFirstName().isEmpty()?
-                user.getFirstName() : userDetails.getFirstName());
-        user.setLastName(userDetails.getLastName().isEmpty()?
-                user.getLastName() : userDetails.getLastName());
-        user.setPassword(userDetails.getPassword().isEmpty()?
-                user.getPassword() : userDetails.getPassword());
-        user.setEmail(userDetails.getEmail().isEmpty()?
-                user.getEmail() : userDetails.getEmail());
-        user.setDob(userDetails.getDob() == null ?
-                user.getDob() : userDetails.getDob());
-        user.setBio(userDetails.getBio().isEmpty()?
-                user.getBio() : userDetails.getBio());
-        user.setGender(userDetails.getGender().isEmpty()?
-                user.getGender() : userDetails.getGender());
-        user.setImage(userDetails.getImage().isEmpty()?
-                user.getImage() : userDetails.getImage());
+        User user = userRepo.findById(id)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        user.setUpdatedAt(Instant.now());
+
+        user.setUsername(Optional.ofNullable(userDetails.getUsername())
+                .filter(username -> !username.isEmpty()).orElse(user.getUsername()));
+
+        user.setFirstName(Optional.ofNullable(userDetails.getFirstName())
+                .filter(name -> !name.isEmpty()).orElse(user.getFirstName()));
+
+        user.setLastName(Optional.ofNullable(userDetails.getLastName())
+                .filter(name -> !name.isEmpty()).orElse(user.getLastName()));
+
+        user.setPassword(Optional.ofNullable(userDetails.getPassword())
+                .filter(password -> !password.isEmpty()).orElse(user.getPassword()));
+
+        user.setEmail(Optional.ofNullable(userDetails.getEmail())
+                .filter(email -> !email.isEmpty()).orElse(user.getEmail()));
+
+        user.setDob(Optional.ofNullable(userDetails.getDob())
+                .orElse(user.getDob()));
+
+        user.setBio(Optional.ofNullable(userDetails.getBio())
+                .filter(bio -> !bio.isEmpty()).orElse(user.getBio()));
+
+        user.setGender(Optional.ofNullable(userDetails.getGender())
+                .filter(gender -> !gender.isEmpty()).orElse(user.getGender()));
+
+        user.setImage(Optional.ofNullable(userDetails.getImage())
+                .filter(image -> !image.isEmpty()).orElse(user.getImage()));
+
         return userRepo.save(user);
     }
+
 
     public User setUpAccount(profileRequest userDetails, User user){
         user.setFirstName(userDetails.getFirstName());
