@@ -108,7 +108,7 @@ public class userController {
 
             return new ResponseEntity<>("Profile created successfully!", HttpStatus.OK);
         } catch (Exception e){
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.OK);
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
 

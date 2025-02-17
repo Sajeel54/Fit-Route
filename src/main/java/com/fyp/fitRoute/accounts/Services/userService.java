@@ -72,15 +72,12 @@ public class userService {
     }
 
     public User setUpAccount(profileRequest userDetails, User user){
-        user.setUpdatedAt(Date.from(Instant.now()));
-        user.setDob(userDetails.getDob() == null ?
-                user.getDob() : userDetails.getDob());
-        user.setBio(userDetails.getBio().isEmpty()?
-                user.getBio() : userDetails.getBio());
-        user.setGender(userDetails.getGender().isEmpty()?
-                user.getGender() : userDetails.getGender());
-        user.setImage(userDetails.getImage().isEmpty()?
-                user.getImage() : userDetails.getImage());
+        user.setFirstName(userDetails.getFirstName());
+        user.setLastName(userDetails.getLastName());
+        user.setDob(userDetails.getDob());
+        user.setBio(userDetails.getBio());
+        user.setGender(userDetails.getGender());
+        user.setImage(userDetails.getImage());
         return userRepo.save(user);
     }
 
