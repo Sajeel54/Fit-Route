@@ -13,7 +13,7 @@ spring:
 
     redis:
       host: ${REDIS_HOST}
-      port: 17802
+      port: ${REDIS_PORT}
       password: ${REDIS_PASSWORD}
 
   servlet:
