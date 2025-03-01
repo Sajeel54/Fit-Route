@@ -9,10 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/notification")
@@ -22,13 +19,27 @@ public class notificationController {
     private notificationService notificationService;
 
 
-    @PostMapping("/register")
+    @PostMapping("/register-token")
     @Operation( summary = "Register your fcm token for notifications service" )
     public ResponseEntity<?> registerToken(@RequestParam String token){
         try {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
             notificationService.registerToken(authentication.getName(), token);
+
+            return new ResponseEntity<>("Registered", HttpStatus.OK);
+        }catch (Exception e){
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @PostMapping("/refresh-token")
+    @Operation( summary = "Register your fcm token for notifications service" )
+    public ResponseEntity<?> refreshToken(@RequestParam String newToken, @RequestParam String oldToken){
+        try {
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+            notificationService.registerToken(authentication.getName(), newToken);
 
             return new ResponseEntity<>("Registered", HttpStatus.OK);
         }catch (Exception e){

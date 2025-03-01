@@ -21,20 +21,15 @@ import java.util.concurrent.TimeUnit;
 public class JwtUtils {
     @Value("${jwt.secret}")
     private String SECRET;
-    @Value("${jwt.login-validity}")
-    private long loginExp;
 
     public String generateToken(UserDetails userDetails) {
         Map<String, String> claims = new HashMap<>();
         // sets issuer you can set other related info by setting claims like this
-        claims.put("iss", "Security App");
+        claims.put("iss", "Fit Route Security");
         return Jwts.builder()
                 .claims(claims)
                 .subject(userDetails.getUsername())
                 .issuedAt(Date.from(Instant.now()))
-                .expiration(Date.from(Instant.now().plusMillis((
-                                TimeUnit.MINUTES.toMillis(loginExp)
-                        ))))
                 .signWith(generateKey())
                 .compact();
     }
@@ -57,8 +52,4 @@ public class JwtUtils {
                 .getPayload();
     }
 
-    public boolean isTokenValid(String jwt) {
-        Claims claims = getClaims(jwt);
-        return claims.getExpiration().after(Date.from(Instant.now()));
-    }
 }

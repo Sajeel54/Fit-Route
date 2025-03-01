@@ -1,7 +1,8 @@
 package com.fyp.fitRoute.accounts.Controllers;
 
 import com.fyp.fitRoute.accounts.Entity.profileCard;
-import com.fyp.fitRoute.accounts.profileRequest;
+import com.fyp.fitRoute.accounts.Utilities.profileRequest;
+import com.fyp.fitRoute.inventory.Services.cloudinaryService;
 import com.fyp.fitRoute.inventory.Services.firebaseService;
 import com.fyp.fitRoute.accounts.Services.followsService;
 import com.fyp.fitRoute.accounts.Services.userService;
@@ -17,6 +18,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/Profile")
@@ -27,11 +30,6 @@ public class userController {
 
     @Autowired
     private followsService flwService;
-
-    @Autowired
-    private firebaseService frbsService;
-
-
 
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/ADMIN")
@@ -100,11 +98,9 @@ public class userController {
     public ResponseEntity<?> setUpProfile(@RequestBody profileRequest pRequest){
         try {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-            String name = authentication.getName();
 
             User myProfile = uService.getProfile(authentication, "Your Profile not identified");
-
-            User user = uService.setUpAccount(pRequest ,myProfile);
+            uService.setUpAccount(pRequest ,myProfile);
 
             return new ResponseEntity<>("Profile created successfully!", HttpStatus.OK);
         } catch (Exception e){

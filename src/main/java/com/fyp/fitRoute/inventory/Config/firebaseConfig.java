@@ -11,8 +11,6 @@ import java.io.IOException;
 
 @Configuration
 public class firebaseConfig {
-    @Value("{storage-bucket}")
-    private String bucket;
     @Bean
     public FirebaseApp initializeFirebase() throws IOException {
         String serviceAccountPath = System.getProperty("user.dir") + "/fitroute-firebase-secret.json";
@@ -20,7 +18,6 @@ public class firebaseConfig {
 
         FirebaseOptions options = FirebaseOptions.builder()
                 .setCredentials(GoogleCredentials.fromStream(serviceAccountStream))
-                .setStorageBucket(bucket)
                 .build();
         return FirebaseApp.initializeApp(options);
     }

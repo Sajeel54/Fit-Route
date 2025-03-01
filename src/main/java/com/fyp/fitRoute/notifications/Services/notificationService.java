@@ -10,6 +10,7 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -35,23 +36,51 @@ public class notificationService {
         notification.setTitle(title);
         notification.setBody(body);
         notification.setReference(ref);
-        String token = getTokenByUsername(notification.getTo());
-        return frbService.sendNotification(title, body, token);
+        List<String> tokens = getTokenByUsername(notification.getTo());
+        String response = "";
+        try {
+            for (String token : tokens) {
+                response = frbService.sendNotification(title, body, token);
+            }
+            notificationRepo.save(notification);
+        } catch (Exception ex) {
+            response = "Not successful";
+        }
+
+        return response;
 
     }
 
-    public void registerToken(String username, String Token){
+    public void registerToken(String username, @NonNull String token){
         userConfig userCon = new userConfig();
-        userCon.setNotificationsToken(Token);
+        List<String> tokens= userCon.getNotificationsTokens();
+        if (tokens.contains(token))
+            return;
+        tokens.add(token);
+        userCon.setNotificationsTokens(tokens);
         userCon.setUsername(username);
-        userCon.setOtp(0);
         userConRepo.save(userCon);
     }
 
-    public String getTokenByUsername(String username){
+    public void refreshToken(String username, @NonNull String oldToken, @NonNull String newToken){
+        Optional<userConfig> userConFound = userConRepo.findByUsername(username);
+        if (userConFound.isEmpty()){
+            registerToken(username, newToken);
+            return;
+        }
+        userConfig userCon = userConFound.get();
+        List<String> tokens = userCon.getNotificationsTokens();
+        tokens.remove(oldToken);
+        tokens.add(newToken);
+        userCon.setNotificationsTokens(tokens);
+        userCon.setUsername(username);
+        userConRepo.save(userCon);
+    }
+
+    public List<String> getTokenByUsername(String username){
         Optional<userConfig> userCon = userConRepo.findByUsername(username);
         if (userCon.isEmpty())
             throw new RuntimeException("Register yourself");
-        return userCon.get().getNotificationsToken();
+        return userCon.get().getNotificationsTokens();
     }
 }

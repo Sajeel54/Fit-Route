@@ -4,6 +4,7 @@ import com.fyp.fitRoute.accounts.Services.userService;
 import com.fyp.fitRoute.posts.Entity.posts;
 import com.fyp.fitRoute.posts.Services.postService;
 import com.fyp.fitRoute.posts.Utilities.postRequest;
+import com.fyp.fitRoute.posts.Utilities.postResponse;
 import com.fyp.fitRoute.security.Entity.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -11,6 +12,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 
 @RestController
@@ -27,9 +30,9 @@ public class postController {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             User myProfile = uService.getProfile(authentication, "Your Profile not identified");
 
-            return new ResponseEntity<>(
-                    pService.getFollowingsPosts(myProfile.getId()),
-                    HttpStatus.OK);
+            List<String> posts = pService.getFollowingsPosts(myProfile.getId(), myProfile.getUsername());
+
+            return new ResponseEntity<>(posts,HttpStatus.OK);
         } catch (Exception e){
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }

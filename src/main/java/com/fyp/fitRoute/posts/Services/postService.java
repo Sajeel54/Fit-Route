@@ -11,6 +11,7 @@ import com.fyp.fitRoute.posts.Repositories.postRepo;
 import com.fyp.fitRoute.posts.Repositories.routeRepo;
 import com.fyp.fitRoute.posts.Utilities.postRequest;
 import com.fyp.fitRoute.posts.Utilities.postResponse;
+import com.fyp.fitRoute.posts.Utilities.postsWebsocketHandler;
 import com.fyp.fitRoute.security.Entity.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
@@ -20,6 +21,7 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.IOException;
 import java.time.Instant;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -37,6 +39,8 @@ public class postService {
     private MongoTemplate mongoTemplate;
     @Autowired
     private redisService redisService;
+    @Autowired
+    private postsWebsocketHandler postsHandler;
 
     public boolean checkLike(String postId, String myId){
         Query query = new Query();
@@ -46,8 +50,12 @@ public class postService {
         return like != null;
     }
 
-    public List<postResponse> getFollowingsPosts(String myId){
+    public List<String> getFollowingsPosts(String myId, String username) throws RuntimeException{
         Date date = Date.from(Instant.now());
+        if (!(postsHandler.checkConnection(username))){
+            throw new RuntimeException("You are not connected to delivery socket");
+        }
+
         Date accessTimeStamp = Objects.requireNonNullElseGet(
                 redisService.get("News Feed Access " + myId, Date.class),
                 () -> Date.from(Instant.now().minusSeconds(48 * 60 * 60))
@@ -68,68 +76,74 @@ public class postService {
 
         query = new Query(Criteria.where("accountId").in(followingIds));
         query.addCriteria(Criteria.where("createdAt").gte(accessTimeStamp));
-        Map<String, postResponse> feed = mongoTemplate.find(query, posts.class)
-                .stream()
-                .collect(Collectors.toMap(
-                        posts::getId, post -> {
-                            User user = mongoTemplate.findOne(new Query(Criteria.where("id").is(post.getAccountId())), User.class);
-                            if (user == null)
-                                throw new RuntimeException("User not found");
-                            return new postResponse(
-                                    post.getId(), post.getLikes(), post.getComments(),
-                                    user.getUsername(), user.getImage(), post.getDescription(),
-                                    post.getTags(), post.getImages(), post.getCategory(),
-                                    post.getCreatedAt(), post.getUpdatedAt(),
-                                    checkLike(post.getId(), post.getAccountId()),
-                                    mongoTemplate.findOne(
-                                            new Query(Criteria.where("").is(post.getRouteId())), route.class
-                                    )
+        List<String> postIds = new ArrayList<>();
+         mongoTemplate.find(query, posts.class)
+                .forEach(post -> {
+                    if (!(postIds.contains(post.getId()))) {
+                        User user = mongoTemplate.findOne(new Query(Criteria.where("id").is(post.getAccountId())), User.class);
+                        if (user == null)
+                            throw new RuntimeException("User not found");
+                        postResponse response = new postResponse(
+                                post.getId(), post.getLikes(), post.getComments(),
+                                user.getUsername(), user.getImage(), post.getDescription(),
+                                post.getTags(), post.getImages(), post.getCategory(),
+                                post.getCreatedAt(), post.getUpdatedAt(),
+                                checkLike(post.getId(), myId),
+                                mongoTemplate.findOne(
+                                        new Query(Criteria.where("").is(post.getRouteId())), route.class
+                                )
+                        );
+                        try {
+                            postIds.add(
+                                    postsHandler.sendFeed(username, response)
                             );
+                        } catch (IOException e) {
+                            throw new RuntimeException(e);
                         }
-                ));
-        Map<String, postResponse> newFeed = new HashMap<>();
+                    }
+                });
         for (String accountId : recentFollowingIds) {
             query = new Query(Criteria.where("accountId").is(accountId))
                     .with(Sort.by(Sort.Direction.DESC, "createdAt"))
                     .limit(2);
 
-            newFeed = mongoTemplate.find(query, posts.class)
-                    .stream()
-                    .collect(Collectors.toMap(
-                            posts::getId, post -> {
-                                User user = mongoTemplate.findOne(new Query(Criteria.where("id").is(post.getAccountId())), User.class);
-                                if (user == null)
-                                    throw new RuntimeException("User not found");
-                                return new postResponse(
-                                        post.getId(), post.getLikes(), post.getComments(),
-                                        user.getUsername(), user.getImage(),
-                                        post.getDescription(), post.getTags(), post.getImages(),
-                                        post.getCategory(), post.getCreatedAt(), post.getUpdatedAt(),
-                                        checkLike(post.getId(), post.getAccountId()),
-                                        mongoTemplate.findOne(
-                                                new Query(Criteria.where("").is(post.getRouteId())), route.class
-                                        )
+            mongoTemplate.find(query, posts.class)
+                    .forEach(post -> {
+                        if (!(postIds.contains(post.getId()))) {
+                            User user = mongoTemplate.findOne(new Query(Criteria.where("id").is(post.getAccountId())), User.class);
+                            if (user == null)
+                                throw new RuntimeException("User not found");
+                            postResponse response = new postResponse(
+                                    post.getId(), post.getLikes(), post.getComments(),
+                                    user.getUsername(), user.getImage(), post.getDescription(),
+                                    post.getTags(), post.getImages(), post.getCategory(),
+                                    post.getCreatedAt(), post.getUpdatedAt(),
+                                    checkLike(post.getId(), myId),
+                                    mongoTemplate.findOne(
+                                            new Query(Criteria.where("").is(post.getRouteId())), route.class
+                                    )
+                            );
+                            try {
+                                postIds.add(
+                                        postsHandler.sendFeed(username, response)
                                 );
+                            } catch (IOException e) {
+                                throw new RuntimeException(e);
                             }
-                    ));
+                        }
+                    });
 
-        }
-        feed.putAll(newFeed);
-
-        List<postResponse> postResponseList = new ArrayList<>();
-        feed.forEach((key, value)  -> {
-            postResponseList.add(value);
-        });
-        return postResponseList;
+            }
+        return postIds;
     }
 
     public List<postResponse> getUserPosts(String accountId){
+        User user = mongoTemplate.findOne(new Query(Criteria.where("id").is(accountId)), User.class);
+        if (user == null)
+            throw new RuntimeException("User not found");
         return pRepo.findByAccountId(accountId)
                 .stream()
                 .map(post -> {
-                    User user = mongoTemplate.findOne(new Query(Criteria.where("id").is(post.getAccountId())), User.class);
-                    if (user == null)
-                        throw new RuntimeException("User not found");
                     return new postResponse(
                             post.getId(),post.getLikes(), post.getComments(),
                             user.getUsername(), user.getImage(), post.getDescription(),

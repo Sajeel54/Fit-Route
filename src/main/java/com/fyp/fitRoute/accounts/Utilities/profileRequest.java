@@ -1,4 +1,4 @@
-package com.fyp.fitRoute.accounts;
+package com.fyp.fitRoute.accounts.Utilities;
 
 import jakarta.validation.constraints.NotEmpty;
 import lombok.Data;

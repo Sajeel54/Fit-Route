@@ -2,7 +2,8 @@ package com.fyp.fitRoute.accounts.Services;
 
 import com.fyp.fitRoute.accounts.Entity.follows;
 import com.fyp.fitRoute.accounts.Entity.profileCard;
-import com.fyp.fitRoute.accounts.profileRequest;
+import com.fyp.fitRoute.accounts.Utilities.profileRequest;
+import com.fyp.fitRoute.inventory.Services.cloudinaryService;
 import com.fyp.fitRoute.posts.Entity.comments;
 import com.fyp.fitRoute.posts.Entity.likes;
 import com.fyp.fitRoute.posts.Entity.posts;
@@ -17,6 +18,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.IOException;
 import java.time.Instant;
 import java.util.Date;
 import java.util.List;
@@ -29,6 +31,9 @@ public class userService {
 
     @Autowired
     MongoTemplate mongoTemplate;
+
+    @Autowired
+    private cloudinaryService cloudinaryService;
 
     public List<User> getAllUsers() {
         return userRepo.findAll();
@@ -47,7 +52,8 @@ public class userService {
         return userRepo.save(user);
     }
 
-    public User updateUser(String id, User userDetails) {
+    @Transactional
+    public User updateUser(String id, User userDetails) throws IOException {
         User user = userRepo.findById(id)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
@@ -77,25 +83,28 @@ public class userService {
         user.setGender(Optional.ofNullable(userDetails.getGender())
                 .filter(gender -> !gender.isEmpty()).orElse(user.getGender()));
 
-        user.setImage(Optional.ofNullable(userDetails.getImage())
-                .filter(image -> !image.isEmpty()).orElse(user.getImage()));
+        if (!(userDetails.getImage().isEmpty()) && userDetails.getImage() != null) {
+            String url = cloudinaryService.uploadImage(userDetails.getImage(), user.getUsername(), true);
+            userDetails.setImage(url);
+        }
 
         return userRepo.save(user);
     }
 
-
-    public User setUpAccount(profileRequest userDetails, User user){
+    @Transactional
+    public User setUpAccount(profileRequest userDetails, User user) throws IOException {
         user.setFirstName(userDetails.getFirstName());
         user.setLastName(userDetails.getLastName());
         user.setDob(userDetails.getDob());
         user.setBio(userDetails.getBio());
         user.setGender(userDetails.getGender());
-        user.setImage(userDetails.getImage());
+        String url = cloudinaryService.uploadImage(userDetails.getImage(), user.getUsername(), false);
+        user.setImage(url);
         return userRepo.save(user);
     }
 
     @Transactional
-    public boolean deleteUsers(String id) {
+    public boolean deleteUsers(String id) throws IOException {
         Query followingQuery = new Query(Criteria.where("following").is(id));
         List<String> followingRecords = mongoTemplate.find(followingQuery, follows.class)
                 .stream()
@@ -134,6 +143,8 @@ public class userService {
         mongoTemplate.findAllAndRemove(new Query(Criteria.where("postId").in(postIds)), likes.class);
         
         userRepo.findById(id).ifPresent(userRepo::delete);
+
+        cloudinaryService.deleteImage(id);
 
         return userRepo.findById(id).isEmpty();
     }
