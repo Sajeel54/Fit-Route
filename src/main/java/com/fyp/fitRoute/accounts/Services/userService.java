@@ -83,10 +83,11 @@ public class userService {
         user.setGender(Optional.ofNullable(userDetails.getGender())
                 .filter(gender -> !gender.isEmpty()).orElse(user.getGender()));
 
-        if (!(userDetails.getImage().isEmpty()) && userDetails.getImage() != null) {
-            String url = cloudinaryService.uploadImage(userDetails.getImage(), user.getUsername(), true);
-            userDetails.setImage(url);
-        }
+        if (userDetails.getImage() != null && !(userDetails.getImage().isEmpty())) {
+                String url = cloudinaryService.uploadImage(userDetails.getImage(), user.getUsername(), true);
+                userDetails.setImage(url);
+            }
+
 
         return userRepo.save(user);
     }
