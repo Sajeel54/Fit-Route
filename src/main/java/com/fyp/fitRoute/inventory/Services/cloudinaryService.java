@@ -18,8 +18,6 @@ public class cloudinaryService {
     private Cloudinary cloudinary;
 
     public String uploadImage(String image, String publicId, boolean overwrite) throws IOException {
-        if (image.isEmpty() || image == null)
-            throw new IllegalArgumentException("image cannot be empty");
         if (publicId.isEmpty() || publicId == null)
             throw new IllegalArgumentException("public id cannot be empty");
         try {
