@@ -85,7 +85,8 @@ public class userService {
 
         if (userDetails.getImage() != null && !(userDetails.getImage().isEmpty())) {
                 String url = cloudinaryService.uploadImage(userDetails.getImage(), user.getId(), true);
-                userDetails.setImage(url+"?t="+user.getUpdatedAt().getTime());
+                url += "?t="+user.getUpdatedAt().getTime();
+                userDetails.setImage(url);
         }
 
 
@@ -100,7 +101,8 @@ public class userService {
         user.setBio(userDetails.getBio());
         user.setGender(userDetails.getGender());
         String url = cloudinaryService.uploadImage(userDetails.getImage(), user.getId(), false);
-        user.setImage(url+"?t="+user.getUpdatedAt().getTime());
+        url += "?t="+user.getUpdatedAt().getTime();
+        user.setImage(url);
         return userRepo.save(user);
     }
 
