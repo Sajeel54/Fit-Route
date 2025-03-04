@@ -57,6 +57,8 @@ public class userService {
         User user = userRepo.findById(id)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
+        user.setUpdatedAt(Date.from(Instant.now()));
+
         user.setUsername(Optional.ofNullable(userDetails.getUsername())
                 .filter(username -> !username.isEmpty()).orElse(user.getUsername()));
 
@@ -82,12 +84,11 @@ public class userService {
                 .filter(gender -> !gender.isEmpty()).orElse(user.getGender()));
 
         if (userDetails.getImage() != null && !(userDetails.getImage().isEmpty())) {
-                String url = cloudinaryService.uploadImage(userDetails.getImage(),
-                        user.getId()+Date.from(Instant.now()), true);
+                String url = cloudinaryService.uploadImage(userDetails.getImage(), user.getId(), true);
                 userDetails.setImage(url);
             }
 
-        user.setUpdatedAt(Date.from(Instant.now()));
+
         return userRepo.save(user);
     }
 
@@ -98,8 +99,7 @@ public class userService {
         user.setDob(userDetails.getDob());
         user.setBio(userDetails.getBio());
         user.setGender(userDetails.getGender());
-        String url = cloudinaryService.uploadImage(userDetails.getImage(),
-                user.getId()+user.getCreatedAt().toString(), false);
+        String url = cloudinaryService.uploadImage(userDetails.getImage(), user.getId(), false);
         user.setImage(url);
         return userRepo.save(user);
     }
@@ -143,21 +143,20 @@ public class userService {
         mongoTemplate.findAllAndRemove(new Query(Criteria.where("postId").in(postIds)), comments.class);
         mongoTemplate.findAllAndRemove(new Query(Criteria.where("postId").in(postIds)), likes.class);
         
-        Optional<User> user = userRepo.findById(id);
-        if (user.isPresent())
-            cloudinaryService.deleteImage(id+user.get().getUpdatedAt().toString());
-
+        userRepo.findById(id).ifPresent(userRepo::delete);
+        cloudinaryService.deleteImage(id);
         return userRepo.findById(id).isEmpty();
     }
 
 
-    public User getProfile(Authentication authentication, String msgException) throws RuntimeException {
+    public User getProfile(Authentication authentication, String msgException) throws Exception {
         String name = authentication.getName();
 
         Optional<User> user = getUserByName(name);
+        Query query = new Query();
 
         if (user.isEmpty())
-            throw new RuntimeException(msgException);
+            throw new Exception(msgException);
 
         return user.get();
     }
