@@ -57,8 +57,6 @@ public class userService {
         User user = userRepo.findById(id)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        user.setUpdatedAt(Date.from(Instant.now()));
-
         user.setUsername(Optional.ofNullable(userDetails.getUsername())
                 .filter(username -> !username.isEmpty()).orElse(user.getUsername()));
 
@@ -89,7 +87,7 @@ public class userService {
                 userDetails.setImage(url);
             }
 
-
+        user.setUpdatedAt(Date.from(Instant.now()));
         return userRepo.save(user);
     }
 
