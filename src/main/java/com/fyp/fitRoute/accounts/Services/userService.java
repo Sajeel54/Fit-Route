@@ -149,14 +149,13 @@ public class userService {
     }
 
 
-    public User getProfile(Authentication authentication, String msgException) throws Exception {
+    public User getProfile(Authentication authentication, String msgException) throws RuntimeException {
         String name = authentication.getName();
 
         Optional<User> user = getUserByName(name);
-        Query query = new Query();
 
         if (user.isEmpty())
-            throw new Exception(msgException);
+            throw new RuntimeException(msgException);
 
         return user.get();
     }
