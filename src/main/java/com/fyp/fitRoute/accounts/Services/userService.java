@@ -85,7 +85,7 @@ public class userService {
 
         if (userDetails.getImage() != null && !(userDetails.getImage().isEmpty())) {
                 String url = cloudinaryService.uploadImage(userDetails.getImage(),
-                        user.getId()+Date.from(Instant.now()).toString(), true);
+                        user.getId()+Date.from(Instant.now()), true);
                 userDetails.setImage(url);
             }
 
@@ -101,7 +101,7 @@ public class userService {
         user.setBio(userDetails.getBio());
         user.setGender(userDetails.getGender());
         String url = cloudinaryService.uploadImage(userDetails.getImage(),
-                user.getUsername()+user.getCreatedAt().toString(), false);
+                user.getId()+user.getCreatedAt().toString(), false);
         user.setImage(url);
         return userRepo.save(user);
     }
@@ -153,14 +153,13 @@ public class userService {
     }
 
 
-    public User getProfile(Authentication authentication, String msgException) throws Exception {
+    public User getProfile(Authentication authentication, String msgException) throws RuntimeException {
         String name = authentication.getName();
 
         Optional<User> user = getUserByName(name);
-        Query query = new Query();
 
         if (user.isEmpty())
-            throw new Exception(msgException);
+            throw new RuntimeException(msgException);
 
         return user.get();
     }
