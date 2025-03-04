@@ -157,7 +157,7 @@ public class userService {
         if (user.isEmpty())
             throw new RuntimeException(msgException);
 
-        user.get().setImage(user.get().getImage()+"?t="+Date.from(Instant.now()));
+        user.get().setImage(user.get().getImage()+"?t="+Date.from(Instant.now()).getTime());
         return user.get();
     }
 
