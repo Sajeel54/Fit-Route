@@ -84,7 +84,8 @@ public class userService {
                 .filter(gender -> !gender.isEmpty()).orElse(user.getGender()));
 
         if (userDetails.getImage() != null && !(userDetails.getImage().isEmpty())) {
-                String url = cloudinaryService.uploadImage(userDetails.getImage(), user.getUsername(), true);
+                String url = cloudinaryService.uploadImage(userDetails.getImage(),
+                        user.getId()+Date.from(Instant.now()).toString(), true);
                 userDetails.setImage(url);
             }
 
@@ -99,7 +100,8 @@ public class userService {
         user.setDob(userDetails.getDob());
         user.setBio(userDetails.getBio());
         user.setGender(userDetails.getGender());
-        String url = cloudinaryService.uploadImage(userDetails.getImage(), user.getUsername(), false);
+        String url = cloudinaryService.uploadImage(userDetails.getImage(),
+                user.getUsername()+user.getCreatedAt().toString(), false);
         user.setImage(url);
         return userRepo.save(user);
     }
@@ -143,9 +145,9 @@ public class userService {
         mongoTemplate.findAllAndRemove(new Query(Criteria.where("postId").in(postIds)), comments.class);
         mongoTemplate.findAllAndRemove(new Query(Criteria.where("postId").in(postIds)), likes.class);
         
-        userRepo.findById(id).ifPresent(userRepo::delete);
-
-        cloudinaryService.deleteImage(id);
+        Optional<User> user = userRepo.findById(id);
+        if (user.isPresent())
+            cloudinaryService.deleteImage(id+user.get().getUpdatedAt().toString());
 
         return userRepo.findById(id).isEmpty();
     }
