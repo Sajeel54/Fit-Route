@@ -86,7 +86,7 @@ public class userService {
         if (userDetails.getImage() != null && !(userDetails.getImage().isEmpty())) {
                 String url = cloudinaryService.uploadImage(userDetails.getImage(), user.getId(), true);
                 url += "?t="+user.getUpdatedAt().getTime();
-                userDetails.setImage(url);
+                user.setImage(url);
         }
 
 
