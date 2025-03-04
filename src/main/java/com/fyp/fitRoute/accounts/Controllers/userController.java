@@ -115,6 +115,7 @@ public class userController {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             User myProfile = uService.getProfile(authentication, "Your profile not found");
             User saved = uService.updateUser(myProfile.getId(), userDetails);
+            saved.setImage(saved.getImage()+"?t="+saved.getUpdatedAt().getTime());
             return new ResponseEntity<>(saved, HttpStatus.OK);
         } catch (Exception e){
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
