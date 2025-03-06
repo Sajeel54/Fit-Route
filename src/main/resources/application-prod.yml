@@ -36,4 +36,3 @@ Cloudinary:
 
 jwt:
   secret: ${JWT_key}
-  login-validity: ${JWT_Login_Validity}
