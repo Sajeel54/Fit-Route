@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class EmailService {
     private static final Logger log = LoggerFactory.getLogger(EmailService.class);
-    @Autowired
+    @Autowired(required = true)
     JavaMailSender javaMailSender;
 
     public void sendMail(String to, String subject, String body){

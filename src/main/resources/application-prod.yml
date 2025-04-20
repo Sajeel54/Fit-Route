@@ -22,10 +22,10 @@ spring:
       max-request-size: ${request_size}
 
   mail:
-    host: {mail_host}
-    port: {mail_port}
-    username: {mail_username}
-    password: {mail_password}
+    host: ${mail_host}
+    port: ${mail_port}
+    username: ${mail_username}
+    password: ${mail_password}
     properties:
       mail:
         smtp:
@@ -50,4 +50,4 @@ jwt:
   secret: ${JWT_key}
 
 google:
-  clientId: {google_clientId}
+  clientId: ${google_clientId}
