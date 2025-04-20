@@ -35,3 +35,4 @@ build/
 src/main/resources/application-dev.yml
 fitroute-firebase-secret.json
 .env
+hs_err_pid15936.log
