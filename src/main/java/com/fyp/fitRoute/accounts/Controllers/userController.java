@@ -1,6 +1,7 @@
 package com.fyp.fitRoute.accounts.Controllers;
 
 import com.fyp.fitRoute.accounts.Entity.profileCard;
+import com.fyp.fitRoute.accounts.Utilities.UserDto;
 import com.fyp.fitRoute.accounts.Utilities.profileRequest;
 import com.fyp.fitRoute.inventory.Services.cloudinaryService;
 import com.fyp.fitRoute.inventory.Services.firebaseService;
@@ -109,7 +110,7 @@ public class userController {
 
     @PutMapping
     @Operation( summary = "Update your profile" )
-    public ResponseEntity<?> updateUser(@RequestBody User userDetails) {
+    public ResponseEntity<?> updateUser(@RequestBody UserDto userDetails) {
         try{
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             User myProfile = uService.getProfile(authentication, "Your profile not found");

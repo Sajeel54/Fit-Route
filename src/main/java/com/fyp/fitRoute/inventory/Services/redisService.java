@@ -22,7 +22,7 @@ public class redisService {
             ObjectMapper mapper = new ObjectMapper();
             return mapper.readValue(Objects.requireNonNull(o).toString(), entityClass);
         } catch (Exception e) {
-            log.error("Exception ", e);
+//            log.error("Exception ", e);
             return null;
         }
     }

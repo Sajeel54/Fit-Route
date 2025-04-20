@@ -9,4 +9,6 @@ import java.util.Optional;
 @Component
 public interface userCredentialsRepo extends MongoRepository<User, String> {
     Optional<User> findByUsername(String username);
+    User findByGoogleId(String googleId);
+    User findByEmail(String email);
 }

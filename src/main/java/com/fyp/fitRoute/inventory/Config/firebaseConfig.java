@@ -17,7 +17,7 @@ import java.nio.charset.StandardCharsets;
 @Configuration
 public class firebaseConfig {
 
-    @Value("${firebase_credentials}")
+    @Value("${firebase.credentials}")
     private String firebase_credentials;
 
     @Bean

@@ -21,6 +21,18 @@ spring:
       max-file-size: ${file_size}
       max-request-size: ${request_size}
 
+  mail:
+    host: {mail_host}
+    port: {mail_host}
+    username: {mail_username}
+    password: {mail_password}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+
 # swagger-ui custom path
 springdoc:
   swagger-ui:
@@ -36,3 +48,6 @@ Cloudinary:
 
 jwt:
   secret: ${JWT_key}
+
+google:
+  clientId: {google_clientId}

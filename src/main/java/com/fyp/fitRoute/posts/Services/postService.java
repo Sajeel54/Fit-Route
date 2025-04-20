@@ -21,11 +21,8 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.io.IOException;
 import java.time.Instant;
 import java.util.*;
-import java.util.stream.Collectors;
-
 
 @Service
 public class postService {
@@ -39,8 +36,6 @@ public class postService {
     private MongoTemplate mongoTemplate;
     @Autowired
     private redisService redisService;
-    @Autowired
-    private postsWebsocketHandler postsHandler;
 
     public boolean checkLike(String postId, String myId){
         Query query = new Query();
@@ -50,15 +45,12 @@ public class postService {
         return like != null;
     }
 
-    public List<String> getFollowingsPosts(String myId, String username) throws RuntimeException{
+    public List<postResponse> getFollowingsPosts(String myId, String username) throws RuntimeException{
         Date date = Date.from(Instant.now());
-        if (!(postsHandler.checkConnection(username))){
-            throw new RuntimeException("You are not connected to delivery socket");
-        }
 
         Date accessTimeStamp = Objects.requireNonNullElseGet(
                 redisService.get("News Feed Access " + myId, Date.class),
-                () -> Date.from(Instant.now().minusSeconds(48 * 60 * 60))
+                () -> Date.from(Instant.now().minusSeconds(48L * 60L * 60L))
         );
         redisService.set("News Feed Access " + myId, date, -1L);
 
@@ -76,10 +68,10 @@ public class postService {
 
         query = new Query(Criteria.where("accountId").in(followingIds));
         query.addCriteria(Criteria.where("createdAt").gte(accessTimeStamp));
-        List<String> postIds = new ArrayList<>();
+        Map<String, postResponse> postList = new HashMap<>();
          mongoTemplate.find(query, posts.class)
                 .forEach(post -> {
-                    if (!(postIds.contains(post.getId()))) {
+                    if (!(postList.containsKey(post.getId()))) {
                         User user = mongoTemplate.findOne(new Query(Criteria.where("id").is(post.getAccountId())), User.class);
                         if (user == null)
                             throw new RuntimeException("User not found");
@@ -93,13 +85,7 @@ public class postService {
                                         new Query(Criteria.where("").is(post.getRouteId())), route.class
                                 )
                         );
-                        try {
-                            postIds.add(
-                                    postsHandler.sendFeed(username, response)
-                            );
-                        } catch (IOException e) {
-                            throw new RuntimeException(e);
-                        }
+                        postList.put(response.getId(), response);
                     }
                 });
         for (String accountId : recentFollowingIds) {
@@ -109,7 +95,7 @@ public class postService {
 
             mongoTemplate.find(query, posts.class)
                     .forEach(post -> {
-                        if (!(postIds.contains(post.getId()))) {
+                        if (!(postList.containsKey(post.getId()))) {
                             User user = mongoTemplate.findOne(new Query(Criteria.where("id").is(post.getAccountId())), User.class);
                             if (user == null)
                                 throw new RuntimeException("User not found");
@@ -123,18 +109,14 @@ public class postService {
                                             new Query(Criteria.where("").is(post.getRouteId())), route.class
                                     )
                             );
-                            try {
-                                postIds.add(
-                                        postsHandler.sendFeed(username, response)
-                                );
-                            } catch (IOException e) {
-                                throw new RuntimeException(e);
-                            }
+                            postList.put(response.getId(), response);
                         }
                     });
 
             }
-        return postIds;
+        List<postResponse> responseList = new ArrayList<>();
+        postList.forEach((k,v) -> responseList.add(v));
+        return responseList;
     }
 
     public List<postResponse> getUserPosts(String accountId){

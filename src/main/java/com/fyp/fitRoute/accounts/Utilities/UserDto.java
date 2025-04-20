@@ -1,30 +1,19 @@
-package com.fyp.fitRoute.security.Entity;
+package com.fyp.fitRoute.accounts.Utilities;
 
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
-import lombok.NoArgsConstructor;
-import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
-import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.Date;
 
-@Document(collection = "users")
 @Data
-@NoArgsConstructor
-public class User {
-    @Id
-    private String id;
-    @NotNull
-    @Indexed(unique = true)
+public class UserDto {
     private String username;
     private String password;
-    private String googleId;
     private String firstName;
     private String lastName;
     private String image;
     private String role;
-    @NotNull
     private String email;
     private Date dob;
     private String bio;
@@ -33,5 +22,4 @@ public class User {
     private int followings;
     private Date createdAt;
     private Date updatedAt;
-
 }

@@ -30,7 +30,7 @@ public class postController {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             User myProfile = uService.getProfile(authentication, "Your Profile not identified");
 
-            List<String> posts = pService.getFollowingsPosts(myProfile.getId(), myProfile.getUsername());
+            List<postResponse> posts = pService.getFollowingsPosts(myProfile.getId(), myProfile.getUsername());
 
             return new ResponseEntity<>(posts,HttpStatus.OK);
         } catch (Exception e){

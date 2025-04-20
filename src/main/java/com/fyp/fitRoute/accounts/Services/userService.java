@@ -2,6 +2,7 @@ package com.fyp.fitRoute.accounts.Services;
 
 import com.fyp.fitRoute.accounts.Entity.follows;
 import com.fyp.fitRoute.accounts.Entity.profileCard;
+import com.fyp.fitRoute.accounts.Utilities.UserDto;
 import com.fyp.fitRoute.accounts.Utilities.profileRequest;
 import com.fyp.fitRoute.inventory.Services.cloudinaryService;
 import com.fyp.fitRoute.posts.Entity.comments;
@@ -53,7 +54,7 @@ public class userService {
     }
 
     @Transactional
-    public User updateUser(String id, User userDetails) throws IOException {
+    public User updateUser(String id, UserDto userDetails) throws IOException {
         User user = userRepo.findById(id)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
@@ -166,6 +167,15 @@ public class userService {
         return mongoTemplate.find(
                 new Query(Criteria.where("username").regex(username, "i")),
                 profileCard.class);
+    }
+
+    public User getUser(String name){
+        Optional<User> user = getUserByName(name);
+
+        if (user.isEmpty())
+            throw new RuntimeException("User not found");
+
+        return user.get();
     }
 
 }
