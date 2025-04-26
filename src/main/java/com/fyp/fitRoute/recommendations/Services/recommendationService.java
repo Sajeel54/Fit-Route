@@ -33,7 +33,7 @@ public class recommendationService {
 
     public void setFilters(String myId){
         manager.clearFilters();
-//        manager.addFilter(socialFilter);
+        manager.addFilter(socialFilter);
         manager.addFilter(annFilter);
     }
 

@@ -89,7 +89,7 @@ public class annFilter implements Filter {
         Date date = new Date(accessTimeStamp.getTime()-(48*60*48*100));
         return mongoCon.findAll(posts.class)
                 .stream()
-                .filter(post -> post.getCreatedAt().before(date))
+                .filter(post -> (post.getCreatedAt().after(date) && post.getCreatedAt().before(accessTimeStamp)))
                 .toList();
     }
 
@@ -98,11 +98,11 @@ public class annFilter implements Filter {
                 .filter(post -> post.getCreatedAt().after(accessTimeStamp))
                 .toList();
 
-        List<String> postIds = postList.stream()
+        List<String> tempIds = postList.stream()
                         .map(posts::getId)
                                 .toList();
-        List<String> ids = filterLikedPosts(postIds, myId);
-        Query query = new Query(Criteria.where("id").in(ids));
+        tempIds = filterLikedPosts(postIds, myId);
+        Query query = new Query(Criteria.where("id").in(tempIds));
         return mongoCon.find(query, posts.class);
     }
 
@@ -127,11 +127,11 @@ public class annFilter implements Filter {
         Query query = new Query(Criteria.where("accountId").is(myId));
         List<likes> temp = mongoCon.find(query, likes.class);
 
-        List<String> postIds = temp.stream()
+        List<String> tempIds = temp.stream()
                 .map(likes::getPostId)
                 .toList();
 
-        query = new Query(Criteria.where("id").in(postIds));
+        query = new Query(Criteria.where("id").in(tempIds));
 
         return mongoCon.find(query, posts.class);
     }
