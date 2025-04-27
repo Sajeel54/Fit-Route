@@ -8,6 +8,7 @@ import java.util.List;
 
 @Getter
 public class postRequest {
+    private String title;
     private String description;
     private List<String> tags;
     private List<String> images;

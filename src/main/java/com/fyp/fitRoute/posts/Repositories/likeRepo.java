@@ -8,5 +8,5 @@ import java.util.List;
 
 @Component
 public interface likeRepo extends MongoRepository<likes, String> {
-    List<likes> findByPostId(String postId);
+    List<likes> findByReferenceId(String referenceId);
 }

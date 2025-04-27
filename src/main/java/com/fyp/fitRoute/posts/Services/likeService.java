@@ -1,7 +1,9 @@
 package com.fyp.fitRoute.posts.Services;
 
+import com.fyp.fitRoute.posts.Entity.comments;
 import com.fyp.fitRoute.posts.Entity.likes;
 import com.fyp.fitRoute.posts.Entity.posts;
+import com.fyp.fitRoute.posts.Repositories.commentRepo;
 import com.fyp.fitRoute.posts.Repositories.likeRepo;
 import com.fyp.fitRoute.posts.Repositories.postRepo;
 import com.fyp.fitRoute.posts.Utilities.likeResponse;
@@ -25,11 +27,13 @@ public class likeService {
     @Autowired
     private postRepo postRepo;
     @Autowired
+    private commentRepo commentRepo;
+    @Autowired
     private MongoTemplate mongoTemplate;
 
     public List<likeResponse> getByPostId(String postId){
         // Fetch all likes associated with the given postId
-        List<likes> likeList = likeRepo.findByPostId(postId);
+        List<likes> likeList = likeRepo.findByReferenceId(postId);
 
         // Extract account IDs from the likes list
         List<String> accountIds = likeList.stream()
@@ -56,7 +60,7 @@ public class likeService {
                             like.getId(),
                             user.getUsername(),
                             user.getImage(),
-                            like.getPostId(),
+                            like.getReferenceId(),
                             like.getCreatedAt(),
                             like.getUpdatedAt()
                     );
@@ -65,10 +69,10 @@ public class likeService {
     }
 
     @Transactional
-    public likes addLike(String postId, String myId){
+    public likes addLike(String referenceId, String myId){
         Date date = Date.from(Instant.now());
-        likes newLike = new likes(null, myId, postId, date, date);
-        Optional<posts> post = postRepo.findById(postId);
+        likes newLike = new likes(null, myId, referenceId, date, date);
+        Optional<posts> post = postRepo.findById(referenceId);
         if (post.isEmpty())
             throw new RuntimeException("Post does not exists");
         posts found = post.get();
@@ -78,13 +82,26 @@ public class likeService {
     }
 
     @Transactional
-    public void deleteLike(String postId, String myId){
+    public likes addLikeToComments(String referenceId, String myId){
+        Date date = Date.from(Instant.now());
+        likes newLike = new likes(null, myId, referenceId, date, date);
+        Optional<comments> comment = commentRepo.findById(referenceId);
+        if (comment.isEmpty())
+            throw new RuntimeException("Post does not exists");
+        comments found = comment.get();
+        found.setLikes(found.getLikes()+1);
+        commentRepo.save(found);
+        return likeRepo.save(newLike);
+    }
+
+    @Transactional
+    public void deleteLike(String referenceId, String myId){
         Query query = new Query();
-        query.addCriteria(Criteria.where("postId").is(postId));
+        query.addCriteria(Criteria.where("referenceId").is(referenceId));
         query.addCriteria(Criteria.where("accountId").is(myId));
         likes like = mongoTemplate.findAndRemove(query,likes.class);
 
-        Optional<posts> post = postRepo.findById(postId);
+        Optional<posts> post = postRepo.findById(referenceId);
         if (post.isEmpty())
             throw new RuntimeException("Post not found");
         posts foundPost = post.get();

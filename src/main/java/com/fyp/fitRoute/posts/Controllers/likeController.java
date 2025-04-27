@@ -46,6 +46,18 @@ public class likeController {
         }
     }
 
+    @PostMapping("/toComment")
+    public ResponseEntity<?> addLikeToComments(String commentId){
+        try {
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            User myProfile = userService.getProfile(authentication, "your profile not identified");
+            likes like = likeService.addLikeToComments(commentId, myProfile.getId());
+            return new ResponseEntity<>(like, HttpStatus.OK);
+        } catch (Exception e){
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+    }
+
     @DeleteMapping
     public ResponseEntity<?> deleteLike(String postId){
         try {

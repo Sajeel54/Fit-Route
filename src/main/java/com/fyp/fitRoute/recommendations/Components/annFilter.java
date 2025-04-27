@@ -68,7 +68,7 @@ public class annFilter implements Filter {
                    User user = mongoCon.findOne(new Query(Criteria.where("id").is(post.getAccountId())), User.class);
                    if (user != null) {
                        response = new postResponse(
-                               post.getId(), post.getLikes(), post.getComments(),
+                               post.getId(), post.getTitle(), post.getLikes(), post.getComments(),
                                user.getUsername(), user.getImage(), post.getDescription(),
                                post.getTags(), post.getImages(), post.getCategory(),
                                post.getCreatedAt(), post.getUpdatedAt(), false,
@@ -113,7 +113,7 @@ public class annFilter implements Filter {
 
         // Get the postIds liked by myId
         List<String> likedByMe = mongoCon.find(query, likes.class).stream()
-                .map(likes::getPostId)
+                .map(likes::getReferenceId)
                 .distinct() // Ensure no duplicates
                 .toList();
 
@@ -128,7 +128,7 @@ public class annFilter implements Filter {
         List<likes> temp = mongoCon.find(query, likes.class);
 
         List<String> tempIds = temp.stream()
-                .map(likes::getPostId)
+                .map(likes::getReferenceId)
                 .toList();
 
         query = new Query(Criteria.where("id").in(tempIds));

@@ -145,10 +145,26 @@ public class userController {
         try {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             User myProfile = uService.getProfile(authentication, "Profile not found.");
-            List<profileCard> users = uService.getProfileCard(username);
+            List<profileCard> users = uService.getProfileCard(username, myProfile.getId());
 
             users.forEach(user ->
                     user.setFollow(flwService.checkFollow(myProfile.getId(), user.getId())));
+
+            return new ResponseEntity<>(users, HttpStatus.OK);
+        } catch (Exception e){
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.NO_CONTENT);
+        }
+    }
+
+    @GetMapping("/followed/search")
+    @Operation( summary = "Search followed users" )
+    public ResponseEntity<?> searchFollowedUser(@RequestParam("u") String username){
+        try {
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            User myProfile = uService.getProfile(authentication, "Profile not found.");
+            List<profileCard> users = uService.getProfileCardOfFollowed(username, myProfile.getId());
+
+            users.forEach(user -> user.setFollow(true));
 
             return new ResponseEntity<>(users, HttpStatus.OK);
         } catch (Exception e){

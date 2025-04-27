@@ -14,7 +14,7 @@ public class likes {
     @Id
     private String id;
     private String accountId;
-    private String postId;
+    private String referenceId; // ID of the post or comment being liked
     private Date createdAt;
     private Date updatedAt;
 }

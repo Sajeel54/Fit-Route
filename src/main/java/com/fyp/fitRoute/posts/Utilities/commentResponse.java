@@ -15,6 +15,8 @@ public class commentResponse {
     private String imageUrl;
     private String postId;
     private String body;
+    private int likes;
+    private boolean liked;
     private Date createdAt;
     private Date updatedAt;
 }

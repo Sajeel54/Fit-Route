@@ -13,8 +13,8 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class postResponse {
-    @Id
     private String id;
+    private String title; // Title of the post
     private int likes; // Number of likes the post has received
     private int comments; // Number of comments on the post
     private String username; // User account/ID that created the post

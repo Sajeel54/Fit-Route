@@ -16,6 +16,7 @@ import java.util.List;
 public class posts {
     @Id
     private String id;
+    private String title; // Title of the post
     private int likes; // Number of likes the post has received
     private int comments; // Number of comments on the post
     private String routeId; // ID of the route associated with the post

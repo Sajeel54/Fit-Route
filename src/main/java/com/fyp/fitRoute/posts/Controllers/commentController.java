@@ -3,7 +3,7 @@ package com.fyp.fitRoute.posts.Controllers;
 import com.fyp.fitRoute.accounts.Services.userService;
 import com.fyp.fitRoute.posts.Entity.comments;
 import com.fyp.fitRoute.posts.Services.commentService;
-import com.fyp.fitRoute.posts.Utilities.commentResponse;
+import com.fyp.fitRoute.posts.Utilities.commentRequest;
 import com.fyp.fitRoute.security.Entity.User;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,7 +13,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
+import java.util.Objects;
 
 @RestController
 @RequestMapping("/comments")
@@ -32,12 +32,22 @@ public class commentController {
         }
     }
 
+    @GetMapping("/replies")
+    public ResponseEntity<?> getCommentReplies(@RequestParam String referenceId){
+        try {
+            return new ResponseEntity<>(commentService.getByCommentId(referenceId), HttpStatus.OK);
+        } catch (Exception e){
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
+
+
     @PostMapping
-    public ResponseEntity<?> addComment(String postId, String body){
+    public ResponseEntity<?> addComment(@RequestBody commentRequest request){
         try {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             User myProfile = userService.getProfile(authentication, "your profile not identified");
-            comments comment = commentService.addComment(postId, myProfile.getId(), body);
+            comments comment = commentService.addComment(request, myProfile.getId());
             return new ResponseEntity<>(comment, HttpStatus.OK);
         } catch (Exception e){
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
@@ -49,7 +59,7 @@ public class commentController {
         try {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             User myProfile = userService.getProfile(authentication, "your profile not identified");
-            if (comment.getAccountId() != myProfile.getId())
+            if (!Objects.equals(comment.getAccountId(), myProfile.getId()))
                 throw new RuntimeException("You cannot delete this post");
             commentService.deleteComment(comment);
             return new ResponseEntity<>(HttpStatus.OK);

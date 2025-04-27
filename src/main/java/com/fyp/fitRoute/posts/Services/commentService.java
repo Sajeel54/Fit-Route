@@ -5,6 +5,7 @@ import com.fyp.fitRoute.posts.Entity.likes;
 import com.fyp.fitRoute.posts.Entity.posts;
 import com.fyp.fitRoute.posts.Repositories.commentRepo;
 import com.fyp.fitRoute.posts.Repositories.postRepo;
+import com.fyp.fitRoute.posts.Utilities.commentRequest;
 import com.fyp.fitRoute.posts.Utilities.commentResponse;
 import com.fyp.fitRoute.posts.Utilities.likeResponse;
 import com.fyp.fitRoute.security.Entity.User;
@@ -30,6 +31,14 @@ public class commentService {
     private postRepo postRepo;
     @Autowired
     private MongoTemplate mongoTemplate;
+
+    public boolean checkLike(String referenceId, String myId){
+        Query query = new Query();
+        query.addCriteria(Criteria.where("referenceId").is(referenceId));
+        query.addCriteria(Criteria.where("accountId").is(myId));
+        likes like = mongoTemplate.findOne(query,likes.class);
+        return like != null;
+    }
 
 
     public List<commentResponse> getByPostId(String postId){
@@ -63,6 +72,8 @@ public class commentService {
                             user.getImage(),
                             comment.getPostId(),
                             comment.getBody(),
+                            comment.getLikes(),
+                            checkLike(comment.getReferenceId(), user.getId()),
                             comment.getCreatedAt(),
                             comment.getUpdatedAt()
                     );
@@ -70,12 +81,54 @@ public class commentService {
                 .toList();
     }
 
+    public List<commentResponse> getByCommentId(String commentId){
+        // Fetch all comments associated with the given postId
+        List<comments> commentsList = commentRepo.findByReferenceId(commentId);
+
+        // Extract account IDs from the comments list
+        List<String> accountIds = commentsList.stream()
+                .map(comments::getAccountId)
+                .toList();
+
+        // Fetch all users in one query
+        List<User> users = mongoTemplate.find(
+                new Query(Criteria.where("id").in(accountIds)),
+                User.class
+        );
+
+        // Map users by their IDs for quick lookup
+        Map<String, User> userMap = users.stream()
+                .collect(Collectors.toMap(User::getId, user -> user));
+
+        // Build the commentResponse list
+        return commentsList.stream()
+                .map(comment -> {
+                    User user = userMap.get(comment.getAccountId());
+                    if (user == null)
+                        throw new RuntimeException("User does not exist for account ID: " + comment.getAccountId());
+                    return new commentResponse(
+                            comment.getId(),
+                            user.getUsername(),
+                            user.getImage(),
+                            comment.getPostId(),
+                            comment.getBody(),
+                            comment.getLikes(),
+                            checkLike(comment.getReferenceId(), user.getId()),
+                            comment.getCreatedAt(),
+                            comment.getUpdatedAt()
+                    );
+                })
+                .toList();
+    }
+
+
     @Transactional
-    public comments addComment(String postId, String myId, String body){
+    public comments addComment(commentRequest request, String myId){
         Date date = Date.from(Instant.now());
         comments newComment = new comments(
-                null, myId, postId, body, date, date);
-        Optional<posts> post = postRepo.findById(postId);
+                null, request.getReferenceId(), myId,
+                request.getPostId(), request.getBody(), 0, date, date);
+        Optional<posts> post = postRepo.findById(request.getPostId());
         if (post.isEmpty())
             throw new RuntimeException("Post does not exists");
         posts found = post.get();

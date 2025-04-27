@@ -13,9 +13,11 @@ import java.util.Date;
 public class comments {
     @Id
     private String id;
+    private String referenceId; // ID of another comment if this is a reply
     private String accountId;
     private String postId;
     private String body;
+    private int likes;
     private Date createdAt;
     private Date updatedAt;
 }

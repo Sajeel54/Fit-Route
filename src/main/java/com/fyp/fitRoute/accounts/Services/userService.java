@@ -163,10 +163,26 @@ public class userService {
         return user.get();
     }
 
-    public List<profileCard> getProfileCard(String username){
+    public List<profileCard> getProfileCard(String username, String myId) {
         return mongoTemplate.find(
                 new Query(Criteria.where("username").regex(username, "i")),
                 profileCard.class);
+    }
+
+    public List<profileCard> getProfileCardOfFollowed(String username, String myId) {
+        List<profileCard> users = mongoTemplate.find(
+                new Query(Criteria.where("username").regex(username, "i")),
+                profileCard.class);
+
+        users = users.stream()
+                .filter(user -> {
+                    Query query = new Query(Criteria.where("following").is(myId));
+                    query.addCriteria(Criteria.where("followed").is(user.getId()));
+                    follows follow = mongoTemplate.findOne(query, follows.class);
+                    return follow != null;
+                }).toList();
+
+        return users;
     }
 
     public User getUser(String name){

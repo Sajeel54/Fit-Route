@@ -50,7 +50,7 @@ public class socialFilter implements Filter {
                 .toList();
 
         return temp.stream()
-                .map(likes::getPostId).toList();
+                .map(likes::getReferenceId).toList();
     }
 
     private List<String> filterLikedPosts(List<String> ids, String myId) {
@@ -60,7 +60,7 @@ public class socialFilter implements Filter {
 
         // Get the postIds liked by myId
         List<String> likedByMe = mongoCon.find(query, likes.class).stream()
-                .map(likes::getPostId)
+                .map(likes::getReferenceId)
                 .distinct() // Ensure no duplicates
                 .toList();
 
@@ -87,7 +87,7 @@ public class socialFilter implements Filter {
                         User user = mongoCon.findOne(new Query(Criteria.where("id").is(post.getAccountId())), User.class);
                         if (user != null) {
                             response = new postResponse(
-                                    post.getId(), post.getLikes(), post.getComments(),
+                                    post.getId(), post.getTitle(), post.getLikes(), post.getComments(),
                                     user.getUsername(), user.getImage(), post.getDescription(),
                                     post.getTags(), post.getImages(), post.getCategory(),
                                     post.getCreatedAt(), post.getUpdatedAt(), false,

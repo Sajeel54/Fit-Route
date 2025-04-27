@@ -1,6 +1,7 @@
 package com.fyp.fitRoute.posts.Services;
 
 import com.fyp.fitRoute.accounts.Entity.follows;
+import com.fyp.fitRoute.inventory.Services.cloudinaryService;
 import com.fyp.fitRoute.inventory.Services.firebaseService;
 import com.fyp.fitRoute.inventory.Services.redisService;
 import com.fyp.fitRoute.posts.Entity.comments;
@@ -21,6 +22,7 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.IOException;
 import java.time.Instant;
 import java.util.*;
 
@@ -29,7 +31,7 @@ public class postService {
     @Autowired
     private postRepo pRepo;
     @Autowired
-    private firebaseService firebaseService;
+    private cloudinaryService cloudinaryService;
     @Autowired
     private routeRepo rRepo;
     @Autowired
@@ -37,9 +39,9 @@ public class postService {
     @Autowired
     private redisService redisService;
 
-    public boolean checkLike(String postId, String myId){
+    public boolean checkLike(String referenceId, String myId){
         Query query = new Query();
-        query.addCriteria(Criteria.where("postId").is(postId));
+        query.addCriteria(Criteria.where("referenceId").is(referenceId));
         query.addCriteria(Criteria.where("accountId").is(myId));
         likes like = mongoTemplate.findOne(query,likes.class);
         return like != null;
@@ -76,7 +78,7 @@ public class postService {
                         if (user == null)
                             throw new RuntimeException("User not found");
                         postResponse response = new postResponse(
-                                post.getId(), post.getLikes(), post.getComments(),
+                                post.getId(),post.getTitle(), post.getLikes(), post.getComments(),
                                 user.getUsername(), user.getImage(), post.getDescription(),
                                 post.getTags(), post.getImages(), post.getCategory(),
                                 post.getCreatedAt(), post.getUpdatedAt(),
@@ -100,7 +102,7 @@ public class postService {
                             if (user == null)
                                 throw new RuntimeException("User not found");
                             postResponse response = new postResponse(
-                                    post.getId(), post.getLikes(), post.getComments(),
+                                    post.getId(), post.getTitle(), post.getLikes(), post.getComments(),
                                     user.getUsername(), user.getImage(), post.getDescription(),
                                     post.getTags(), post.getImages(), post.getCategory(),
                                     post.getCreatedAt(), post.getUpdatedAt(),
@@ -127,7 +129,7 @@ public class postService {
                 .stream()
                 .map(post -> {
                     return new postResponse(
-                            post.getId(),post.getLikes(), post.getComments(),
+                            post.getId(), post.getTitle(),post.getLikes(), post.getComments(),
                             user.getUsername(), user.getImage(), post.getDescription(),
                             post.getTags(), post.getImages(), post.getCategory(),
                             post.getCreatedAt(), post.getUpdatedAt(),
@@ -139,27 +141,30 @@ public class postService {
     }
 
     @Transactional
-    public posts addPost(postRequest body, String myId) {
+    public posts addPost(postRequest body, String myId) throws IOException {
         Date date = Date.from(Instant.now());
         route newRoute = rRepo.save(new route(
                 null, body.getDistance(), body.getTime(), body.getCoordinates(), date, date
         ));
 
         posts newPost = pRepo.save(new posts(
-                null, 0, 0, newRoute.getId(), myId,
+                null, body.getTitle(),0, 0, newRoute.getId(), myId,
                 body.getDescription(), body.getTags(), body.getImages(),body.getCategory(), date, date
         ));
         List<String> imageUrls = new ArrayList<>();
-/*
+
         for (String image : newPost.getImages()){
+            int index = 0;
             imageUrls.add(
-                    firebaseService.uploadImage(
+                    cloudinaryService.uploadImage(
                             image,
-                            post.getId()+","+image
+                            newPost.getId()+"index"+index,
+                            false
                     )
             );
+            index++;
         }
-*/
+
         newPost.setImages(imageUrls);
         return pRepo.save(newPost);
     }
