@@ -31,9 +31,9 @@ public class likeService {
     @Autowired
     private MongoTemplate mongoTemplate;
 
-    public List<likeResponse> getByPostId(String postId){
+    public List<likeResponse> getByPostId(String reference){
         // Fetch all likes associated with the given postId
-        List<likes> likeList = likeRepo.findByReferenceId(postId);
+        List<likes> likeList = likeRepo.findByReferenceId(reference);
 
         // Extract account IDs from the likes list
         List<String> accountIds = likeList.stream()

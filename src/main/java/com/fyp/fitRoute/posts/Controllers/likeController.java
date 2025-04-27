@@ -23,9 +23,9 @@ public class likeController {
     private userService userService;
 
     @GetMapping
-    public ResponseEntity<?> getLikes(@RequestParam String postId){
+    public ResponseEntity<?> getLikes(@RequestParam String referenceId){
         try {
-            List<likeResponse> likes = likeService.getByPostId(postId);
+            List<likeResponse> likes = likeService.getByPostId(referenceId);
             return new ResponseEntity<>(
                     likes,
                     HttpStatus.OK);
@@ -35,7 +35,7 @@ public class likeController {
     }
 
     @PostMapping
-    public ResponseEntity<?> addLike(String postId){
+    public ResponseEntity<?> addLike(@RequestParam String postId){
         try {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             User myProfile = userService.getProfile(authentication, "your profile not identified");
@@ -47,7 +47,7 @@ public class likeController {
     }
 
     @PostMapping("/toComment")
-    public ResponseEntity<?> addLikeToComments(String commentId){
+    public ResponseEntity<?> addLikeToComments(@RequestParam String commentId){
         try {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             User myProfile = userService.getProfile(authentication, "your profile not identified");
