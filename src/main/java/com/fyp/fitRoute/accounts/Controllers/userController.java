@@ -1,10 +1,9 @@
 package com.fyp.fitRoute.accounts.Controllers;
 
+import com.fyp.fitRoute.accounts.Entity.profile;
 import com.fyp.fitRoute.accounts.Entity.profileCard;
 import com.fyp.fitRoute.accounts.Utilities.UserDto;
 import com.fyp.fitRoute.accounts.Utilities.profileRequest;
-import com.fyp.fitRoute.inventory.Services.cloudinaryService;
-import com.fyp.fitRoute.inventory.Services.firebaseService;
 import com.fyp.fitRoute.accounts.Services.followsService;
 import com.fyp.fitRoute.accounts.Services.userService;
 import com.fyp.fitRoute.security.Entity.User;
@@ -19,7 +18,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 @RestController
@@ -147,9 +145,6 @@ public class userController {
             User myProfile = uService.getProfile(authentication, "Profile not found.");
             List<profileCard> users = uService.getProfileCard(username, myProfile.getId());
 
-            users.forEach(user ->
-                    user.setFollow(flwService.checkFollow(myProfile.getId(), user.getId())));
-
             return new ResponseEntity<>(users, HttpStatus.OK);
         } catch (Exception e){
             return new ResponseEntity<>(e.getMessage(), HttpStatus.NO_CONTENT);
@@ -164,9 +159,22 @@ public class userController {
             User myProfile = uService.getProfile(authentication, "Profile not found.");
             List<profileCard> users = uService.getProfileCardOfFollowed(username, myProfile.getId());
 
-            users.forEach(user -> user.setFollow(true));
-
             return new ResponseEntity<>(users, HttpStatus.OK);
+        } catch (Exception e){
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.NO_CONTENT);
+        }
+    }
+
+    @GetMapping("/search/username")
+    @Operation( summary = "Search followed users" )
+    public ResponseEntity<?> getUserProfile(@RequestParam("u") String username){
+        try {
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            User myProfile = uService.getProfile(authentication, "Profile not found.");
+            profile u = uService.getProfilebyUsername(username);
+            u.setFollow(flwService.checkFollow(myProfile.getId(), u.getId()));
+
+            return new ResponseEntity<>(u, HttpStatus.OK);
         } catch (Exception e){
             return new ResponseEntity<>(e.getMessage(), HttpStatus.NO_CONTENT);
         }

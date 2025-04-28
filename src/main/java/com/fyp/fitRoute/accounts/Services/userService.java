@@ -1,6 +1,7 @@
 package com.fyp.fitRoute.accounts.Services;
 
 import com.fyp.fitRoute.accounts.Entity.follows;
+import com.fyp.fitRoute.accounts.Entity.profile;
 import com.fyp.fitRoute.accounts.Entity.profileCard;
 import com.fyp.fitRoute.accounts.Utilities.UserDto;
 import com.fyp.fitRoute.accounts.Utilities.profileRequest;
@@ -192,6 +193,15 @@ public class userService {
             throw new RuntimeException("User not found");
 
         return user.get();
+    }
+
+    public profile getProfilebyUsername(String username) {
+        Query query = new Query(Criteria.where("username").is(username));
+        profile user = mongoTemplate.findOne(query, profile.class);
+        if (user == null)
+            throw new RuntimeException("User not found");
+        user.setFollow(false);
+        return user;
     }
 
 }

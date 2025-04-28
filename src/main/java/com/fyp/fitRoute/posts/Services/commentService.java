@@ -9,6 +9,7 @@ import com.fyp.fitRoute.posts.Utilities.commentRequest;
 import com.fyp.fitRoute.posts.Utilities.commentResponse;
 import com.fyp.fitRoute.posts.Utilities.likeResponse;
 import com.fyp.fitRoute.security.Entity.User;
+import com.google.common.base.Objects;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -43,7 +44,9 @@ public class commentService {
 
     public List<commentResponse> getByPostId(String postId){
         // Fetch all comments associated with the given postId
-        List<comments> commentsList = commentRepo.findByPostId(postId);
+        List<comments> commentsList = commentRepo.findByPostId(postId).stream()
+                .filter(comment -> Objects.equal(comment.getReferenceId(), null))
+                .toList();
 
         // Extract account IDs from the comments list
         List<String> accountIds = commentsList.stream()

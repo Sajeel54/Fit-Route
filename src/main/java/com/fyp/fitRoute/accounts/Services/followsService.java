@@ -1,6 +1,7 @@
 package com.fyp.fitRoute.accounts.Services;
 
 import com.fyp.fitRoute.accounts.Entity.follows;
+import com.fyp.fitRoute.accounts.Entity.profile;
 import com.fyp.fitRoute.accounts.Entity.profileCard;
 import com.fyp.fitRoute.accounts.Repositories.followsRepo;
 import com.fyp.fitRoute.security.Entity.User;
@@ -85,16 +86,7 @@ public class followsService{
                 .map(follows::getFollowing)
                 .toList();
         query = new Query(Criteria.where("id").in(followerIds));
-        List<profileCard> queryFollowers = mongoTemplate.find(query, profileCard.class);
-        List<profileCard> followers = new ArrayList<>();
-        queryFollowers.forEach(follower -> {
-                follower.setFollow(checkFollow(userId, follower.getId()));
-            if (followerIds.contains(follower.getId()))
-                followers.add(follower);
-            else
-                followers.add(new profileCard());
-        });
-        return followers;
+        return mongoTemplate.find(query, profileCard.class);
     }
 
     public List<profileCard> getFollowing(String userId){
@@ -105,15 +97,6 @@ public class followsService{
                 .map(follows::getFollowed)
                 .toList();
         query = new Query(Criteria.where("id").in(followingIds));
-        List<profileCard> queryFollowings = mongoTemplate.find(query, profileCard.class);
-        List<profileCard> followings = mongoTemplate.find(query, profileCard.class);
-        queryFollowings.forEach(followed -> {
-            followed.setFollow(true);
-            if (followingIds.contains(followed.getId()))
-                followings.add(followed);
-            else
-                followings.add(new profileCard("Username", true));
-        });
-        return followings;
+        return mongoTemplate.find(query, profileCard.class);
     }
 }
