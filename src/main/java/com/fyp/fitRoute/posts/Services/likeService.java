@@ -72,6 +72,9 @@ public class likeService {
     public likes addLike(String referenceId, String myId){
         Date date = Date.from(Instant.now());
         likes newLike = new likes(null, myId, referenceId, date, date);
+        Optional<likes> like = likeRepo.findByReferenceIdAndAccountId(referenceId, myId);
+        if (like.isPresent())
+            throw new RuntimeException("You have already liked this post");
         Optional<posts> post = postRepo.findById(referenceId);
         if (post.isEmpty())
             throw new RuntimeException("Post does not exists");
@@ -86,6 +89,11 @@ public class likeService {
         Date date = Date.from(Instant.now());
         likes newLike = new likes(null, myId, referenceId, date, date);
         Optional<comments> comment = commentRepo.findById(referenceId);
+
+        Optional<likes> like = likeRepo.findByReferenceIdAndAccountId(referenceId, myId);
+        if (like.isPresent())
+            throw new RuntimeException("You have already liked this comment");
+
         if (comment.isEmpty())
             throw new RuntimeException("Post does not exists");
         comments found = comment.get();

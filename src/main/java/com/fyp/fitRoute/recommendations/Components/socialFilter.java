@@ -55,7 +55,7 @@ public class socialFilter implements Filter {
 
     private List<String> filterLikedPosts(List<String> ids, String myId) {
         // Step 1: Find postIds liked by myId
-        Query query = new Query(Criteria.where("postId").in(ids)
+        Query query = new Query(Criteria.where("referenceId").in(ids)
                 .and("accountId").is(myId));
 
         // Get the postIds liked by myId

@@ -33,6 +33,9 @@ public class followsService{
         follows entry = new follows();
         Date date = Date.from(Instant.now());
 
+        if (checkFollow(follower.getId(), followed.getId()))
+            throw new RuntimeException("You already follow this user");
+
         if (followed.getId() == follower.getId())
             throw new RuntimeException("user unable of being followed");
 
