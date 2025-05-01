@@ -2,7 +2,6 @@ package com.fyp.fitRoute.posts.Services;
 
 import com.fyp.fitRoute.accounts.Entity.follows;
 import com.fyp.fitRoute.inventory.Services.cloudinaryService;
-import com.fyp.fitRoute.inventory.Services.firebaseService;
 import com.fyp.fitRoute.inventory.Services.redisService;
 import com.fyp.fitRoute.posts.Entity.comments;
 import com.fyp.fitRoute.posts.Entity.likes;
@@ -12,7 +11,6 @@ import com.fyp.fitRoute.posts.Repositories.postRepo;
 import com.fyp.fitRoute.posts.Repositories.routeRepo;
 import com.fyp.fitRoute.posts.Utilities.postRequest;
 import com.fyp.fitRoute.posts.Utilities.postResponse;
-import com.fyp.fitRoute.posts.Utilities.postsWebsocketHandler;
 import com.fyp.fitRoute.security.Entity.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
@@ -170,7 +168,14 @@ public class postService {
     }
 
     @Transactional
-    public void deletePost(String publisherId, posts post){
+    public void deletePost(String publisherId, String postId){
+        Optional<posts> selectedPost = pRepo.findById(postId);
+
+        if (selectedPost.isEmpty())
+            throw new RuntimeException("Post Not found");
+
+        posts post = selectedPost.get();
+
         if (!Objects.equals(post.getAccountId(), publisherId))
             throw new RuntimeException("Unable to delete post");
 

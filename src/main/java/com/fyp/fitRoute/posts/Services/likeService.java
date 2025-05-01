@@ -115,8 +115,6 @@ public class likeService {
         posts foundPost = post.get();
         foundPost.setLikes(foundPost.getLikes()-1);
         postRepo.save(foundPost);
-        if (like == null)
-            throw new RuntimeException("like does not exists");
         Optional<likes> found = likeRepo.findById(like.getId());
         if (found.isPresent())
             throw new RuntimeException("Unable to unlike post");

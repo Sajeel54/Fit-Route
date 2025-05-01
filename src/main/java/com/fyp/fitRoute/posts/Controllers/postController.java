@@ -69,11 +69,11 @@ public class postController {
     }
 
     @DeleteMapping
-    public ResponseEntity<?> deletePost(@RequestBody posts post){
+    public ResponseEntity<?> deletePost(@RequestParam String postId){
         try {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             User myProfile = uService.getProfile(authentication, "Your Profile not identified");
-            pService.deletePost(myProfile.getId(), post);
+            pService.deletePost(myProfile.getId(), postId);
             return new ResponseEntity<>(HttpStatus.OK);
         } catch (Exception e){
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
