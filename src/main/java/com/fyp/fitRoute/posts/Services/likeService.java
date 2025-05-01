@@ -107,7 +107,12 @@ public class likeService {
         Query query = new Query();
         query.addCriteria(Criteria.where("referenceId").is(referenceId));
         query.addCriteria(Criteria.where("accountId").is(myId));
-        likes like = mongoTemplate.findAndRemove(query,likes.class);
+        likes like = mongoTemplate.findOne(query,likes.class);
+
+        if (like == null)
+            throw new RuntimeException("Like not found");
+
+        mongoTemplate.remove(like);
 
         Optional<posts> post = postRepo.findById(referenceId);
         if (post.isEmpty())
