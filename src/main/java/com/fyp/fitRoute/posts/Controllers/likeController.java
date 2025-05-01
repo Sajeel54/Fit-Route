@@ -59,7 +59,7 @@ public class likeController {
     }
 
     @DeleteMapping
-    public ResponseEntity<?> deleteLike(String postId){
+    public ResponseEntity<?> deleteLike(@RequestParam String postId){
         try {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             User myProfile = userService.getProfile(authentication, "your profile not identified");
