@@ -137,13 +137,11 @@ public class userController {
         }
     }
 
-    @GetMapping("/search")
+    @GetMapping("/search/users")
     @Operation( summary = "Search users" )
     public ResponseEntity<?> searchUsers(@RequestParam("u") String username){
         try {
-            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-            User myProfile = uService.getProfile(authentication, "Profile not found.");
-            List<profileCard> users = uService.getProfileCard(username, myProfile.getId());
+            List<profileCard> users = uService.getProfileCard(username);
 
             return new ResponseEntity<>(users, HttpStatus.OK);
         } catch (Exception e){
@@ -165,7 +163,7 @@ public class userController {
         }
     }
 
-    @GetMapping("/search/username")
+    @GetMapping("/search")
     @Operation( summary = "Search followed users" )
     public ResponseEntity<?> getUserProfile(@RequestParam("u") String username){
         try {
@@ -176,6 +174,19 @@ public class userController {
 
             return new ResponseEntity<>(u, HttpStatus.OK);
         } catch (Exception e){
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.NO_CONTENT);
+        }
+    }
+
+    @GetMapping("/All")
+    public ResponseEntity<?> getAllProfiles() {
+        try {
+            List<profileCard> users = uService.getProfileOfAll();
+            users = users.stream()
+                    .filter(user -> !(flwService.checkFollow(user.getId(), user.getId())))
+                    .toList();
+            return new ResponseEntity<>(users, HttpStatus.OK);
+        } catch (Exception e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.NO_CONTENT);
         }
     }

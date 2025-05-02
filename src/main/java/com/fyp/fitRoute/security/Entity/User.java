@@ -1,6 +1,9 @@
 package com.fyp.fitRoute.security.Entity;
 
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
@@ -18,6 +21,8 @@ public class User {
     @NotNull
     @Indexed(unique = true)
     private String username;
+    @NotBlank(message = "Password cannot be blank")
+    @Size(min = 8, max = 50, message = "Password must be between 8 and 50 characters")
     private String password;
     private String googleId;
     private String firstName;
@@ -25,6 +30,7 @@ public class User {
     private String image;
     private String role;
     @NotNull
+    @Email
     private String email;
     private Date dob;
     private String bio;

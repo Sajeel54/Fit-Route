@@ -103,16 +103,35 @@ public class likeService {
     }
 
     @Transactional
-    public void deleteLike(String referenceId, String myId){
+    public void deleteLikeFromComments(String referenceId, String myId){
         Query query = new Query();
         query.addCriteria(Criteria.where("referenceId").is(referenceId));
         query.addCriteria(Criteria.where("accountId").is(myId));
         likes like = mongoTemplate.findOne(query,likes.class);
 
+        Optional<comments> comment = commentRepo.findById(referenceId);
+        if (comment.isEmpty())
+            throw new RuntimeException("Post not found");
+        comments foundComment = comment.get();
+        foundComment.setLikes(foundComment.getLikes()-1);
+        commentRepo.save(foundComment);
+
         if (like == null)
             throw new RuntimeException("Like not found");
 
         mongoTemplate.remove(like);
+
+        Optional<likes> found = likeRepo.findById(like.getId());
+        if (found.isPresent())
+            throw new RuntimeException("Unable to unlike post");
+    }
+
+    @Transactional
+    public void deleteLike(String referenceId, String myId){
+        Query query = new Query();
+        query.addCriteria(Criteria.where("referenceId").is(referenceId));
+        query.addCriteria(Criteria.where("accountId").is(myId));
+        likes like = mongoTemplate.findOne(query,likes.class);
 
         Optional<posts> post = postRepo.findById(referenceId);
         if (post.isEmpty())
@@ -120,6 +139,12 @@ public class likeService {
         posts foundPost = post.get();
         foundPost.setLikes(foundPost.getLikes()-1);
         postRepo.save(foundPost);
+
+        if (like == null)
+            throw new RuntimeException("Like not found");
+
+        mongoTemplate.remove(like);
+
         Optional<likes> found = likeRepo.findById(like.getId());
         if (found.isPresent())
             throw new RuntimeException("Unable to unlike post");

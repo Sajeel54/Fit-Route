@@ -164,7 +164,7 @@ public class userService {
         return user.get();
     }
 
-    public List<profileCard> getProfileCard(String username, String myId) {
+    public List<profileCard> getProfileCard(String username) {
         return mongoTemplate.find(
                 new Query(Criteria.where("username").regex(username, "i")),
                 profileCard.class);
@@ -204,4 +204,7 @@ public class userService {
         return user;
     }
 
+    public List<profileCard> getProfileOfAll() {
+        return mongoTemplate.findAll(profileCard.class);
+    }
 }
