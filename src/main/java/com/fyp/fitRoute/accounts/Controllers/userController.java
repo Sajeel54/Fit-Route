@@ -58,7 +58,7 @@ public class userController {
         }
     }
 
-    @GetMapping("/myfollowers")
+    @GetMapping("/myFollowers")
     @Operation( summary = "Get your followers" )
     public ResponseEntity<?> getMyFollowers(){
         try{
@@ -75,7 +75,7 @@ public class userController {
         }
     }
 
-    @GetMapping("/myfollowings")
+    @GetMapping("/myFollowings")
     @Operation( summary = "Get users whom you follow" )
     public ResponseEntity<?> getMyFollowings(){
         try{
