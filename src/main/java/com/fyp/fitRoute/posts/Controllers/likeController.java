@@ -77,7 +77,7 @@ public class likeController {
         }
     }
 
-    @DeleteMapping
+    @DeleteMapping("/fromComment")
     @Operation(summary = "Delete like from comment")
     public ResponseEntity<?> deleteLikeFromComments(@RequestParam String postId){
         try {
