@@ -193,9 +193,10 @@ public class userController {
             List<profileCard> users = uService.getProfileOfAll();
             users = users.stream()
                     .filter(user -> !(
-                            flwService.checkFollow(user.getId(), user.getId()) || user.getId().equals(myProfile.getId())
-                    ))
-                    .peek(user -> user.setFollow(flwService.checkFollow(myProfile.getId(), user.getId())))
+                            flwService.checkFollow(user.getId(), user.getId()) &&
+                                    user.getId().equals(myProfile.getId()))
+                    )
+                    .peek(user -> user.setFollow(false))
                     .toList();
             return new ResponseEntity<>(users, HttpStatus.OK);
         } catch (Exception e) {
