@@ -170,7 +170,7 @@ public class userController {
     }
 
     @GetMapping("/search")
-    @Operation( summary = "Search followed users" )
+    @Operation( summary = "Search users" )
     public ResponseEntity<?> getUserProfile(@RequestParam("u") String username){
         try {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -185,6 +185,7 @@ public class userController {
     }
 
     @GetMapping("/All")
+    @Operation( summary = "Get all users you don't follow" )
     public ResponseEntity<?> getAllProfiles() {
         try {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();

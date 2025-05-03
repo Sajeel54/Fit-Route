@@ -14,6 +14,7 @@ public class profileCard {
     private String lastName;
     private String image;
     private int followers;
+    private int followings;
     private int activities;
     private boolean follow;
 }

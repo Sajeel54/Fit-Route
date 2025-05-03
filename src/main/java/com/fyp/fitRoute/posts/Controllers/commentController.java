@@ -5,6 +5,7 @@ import com.fyp.fitRoute.posts.Entity.comments;
 import com.fyp.fitRoute.posts.Services.commentService;
 import com.fyp.fitRoute.posts.Utilities.commentRequest;
 import com.fyp.fitRoute.security.Entity.User;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -17,6 +18,7 @@ import java.util.Objects;
 
 @RestController
 @RequestMapping("/comments")
+@Tag(name = "Comment Controller", description = "Comment API endpoints")
 public class commentController {
     @Autowired
     private commentService commentService;

@@ -6,6 +6,8 @@ import com.fyp.fitRoute.posts.Services.postService;
 import com.fyp.fitRoute.posts.Utilities.postRequest;
 import com.fyp.fitRoute.posts.Utilities.postResponse;
 import com.fyp.fitRoute.security.Entity.User;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,6 +20,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/post")
+@Tag(name = "Post Controller", description = "Post API endpoints")
 public class postController {
     @Autowired
     private postService pService;
@@ -25,6 +28,7 @@ public class postController {
     private userService uService;
 
     @GetMapping
+    @Operation(summary = "Get posts by accountId")
     public ResponseEntity<?> getPosts(@RequestParam String accountId){
         try {
             return new ResponseEntity<>(
@@ -36,6 +40,7 @@ public class postController {
     }
 
     @GetMapping("/news")
+    @Operation(summary = "Get posts by followings")
     public ResponseEntity<?> getYourNewsFeed(){
         try {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -50,6 +55,7 @@ public class postController {
     }
 
     @GetMapping("/myPosts")
+    @Operation(summary = "Get your posts")
     public ResponseEntity<?> getYourPosts(){
         try {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -64,6 +70,7 @@ public class postController {
     }
 
     @PostMapping
+    @Operation(summary = "Add a post")
     public ResponseEntity<?> addPost(
             @RequestBody postRequest body
     ){
@@ -80,6 +87,7 @@ public class postController {
     }
 
     @DeleteMapping
+    @Operation(summary = "Delete a post")
     public ResponseEntity<?> deletePost(@RequestParam String postId){
         try {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();

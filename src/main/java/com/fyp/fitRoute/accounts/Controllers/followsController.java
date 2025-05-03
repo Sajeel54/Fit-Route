@@ -74,7 +74,7 @@ public class followsController {
     }
 
     @GetMapping("/followers")
-    @Operation( summary = "Get your followers" )
+    @Operation( summary = "Get followers of a user" )
     public ResponseEntity<?> getFollowers(@RequestParam String id){
         try{
             return new ResponseEntity<>(
@@ -87,7 +87,7 @@ public class followsController {
     }
 
     @GetMapping("/followings")
-    @Operation( summary = "Get users whom you follow" )
+    @Operation( summary = "Get users followed by any user" )
     public ResponseEntity<?> getFollowings(@RequestParam String id){
         try{
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
