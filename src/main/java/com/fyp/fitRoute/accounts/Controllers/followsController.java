@@ -1,6 +1,7 @@
 package com.fyp.fitRoute.accounts.Controllers;
 
 import com.fyp.fitRoute.accounts.Entity.follows;
+import com.fyp.fitRoute.accounts.Entity.profileCard;
 import com.fyp.fitRoute.accounts.Services.followsService;
 import com.fyp.fitRoute.accounts.Services.userService;
 import com.fyp.fitRoute.notifications.Services.notificationService;
@@ -12,11 +13,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -71,6 +70,36 @@ public class followsController {
             return new ResponseEntity<>(checkDeletion, HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @GetMapping("/followers")
+    @Operation( summary = "Get your followers" )
+    public ResponseEntity<?> getFollowers(@RequestParam String id){
+        try{
+            return new ResponseEntity<>(
+                    flwService.getFollowers(id),
+                    HttpStatus.OK);
+
+        } catch (Exception e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.NO_CONTENT);
+        }
+    }
+
+    @GetMapping("/followings")
+    @Operation( summary = "Get users whom you follow" )
+    public ResponseEntity<?> getFollowings(@RequestParam String id){
+        try{
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            User myProfile = uService.getProfile(authentication, "Profile not found");
+            List<profileCard> users = flwService.getFollowing(id).stream()
+                    .peek(user-> user.setFollow(flwService.checkFollow(myProfile.getId(), user.getId()))).toList();
+            return new ResponseEntity<>(
+                    users,
+                    HttpStatus.OK);
+
+        } catch (Exception e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.NO_CONTENT);
         }
     }
 }

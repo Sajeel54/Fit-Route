@@ -91,36 +91,6 @@ public class userController {
         }
     }
 
-    @GetMapping("/followers")
-    @Operation( summary = "Get your followers" )
-    public ResponseEntity<?> getFollowers(@RequestParam String id){
-        try{
-            return new ResponseEntity<>(
-                    flwService.getFollowers(id),
-                    HttpStatus.OK);
-
-        } catch (Exception e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.NO_CONTENT);
-        }
-    }
-
-    @GetMapping("/followings")
-    @Operation( summary = "Get users whom you follow" )
-    public ResponseEntity<?> getFollowings(@RequestParam String id){
-        try{
-            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-            User myProfile = uService.getProfile(authentication, "Profile not found");
-            List<profileCard> users = flwService.getFollowing(id).stream()
-                    .peek(user-> user.setFollow(flwService.checkFollow(myProfile.getId(), user.getId()))).toList();
-            return new ResponseEntity<>(
-                    users,
-                    HttpStatus.OK);
-
-        } catch (Exception e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.NO_CONTENT);
-        }
-    }
-
     @PostMapping("/createProfile")
     @Operation( summary="set up profile after signup" )
     public ResponseEntity<?> setUpProfile(@RequestBody profileRequest pRequest){
