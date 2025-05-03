@@ -57,7 +57,7 @@ public class followsService{
         if (found == null)
             throw new RuntimeException("You do not follow this user");
 
-        follower.setFollowers(follower.getFollowers()-1);
+        follower.setFollowings(follower.getFollowings()-1);
         followed.setFollowers(followed.getFollowers()-1);
         userRepo.save(follower);
         userRepo.save(followed);

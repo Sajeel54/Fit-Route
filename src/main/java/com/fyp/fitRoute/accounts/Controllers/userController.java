@@ -191,7 +191,9 @@ public class userController {
             User myProfile = uService.getProfile(authentication, "Profile not found.");
             List<profileCard> users = uService.getProfileOfAll();
             users = users.stream()
-                    .filter(user -> !(flwService.checkFollow(user.getId(), user.getId())))
+                    .filter(user -> !(
+                            flwService.checkFollow(user.getId(), user.getId()) || user.getId().equals(myProfile.getId())
+                    ))
                     .peek(user -> user.setFollow(flwService.checkFollow(myProfile.getId(), user.getId())))
                     .toList();
             return new ResponseEntity<>(users, HttpStatus.OK);
