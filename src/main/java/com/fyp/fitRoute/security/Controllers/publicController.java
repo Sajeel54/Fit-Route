@@ -99,6 +99,10 @@ public class publicController {
             user.setCreatedAt(Date.from(Instant.now()));
             user.setUpdatedAt(user.getCreatedAt());
             user.setRole("USER");
+            user.setActivities(0);
+            user.setFollowers(0);
+            user.setFollowings(0);
+            user.setGoogleId(null);
             user.setEmail(request.getEmail());
             User createdUser = uService.addUser(user);
             return new ResponseEntity<>(createdUser, HttpStatus.CREATED);

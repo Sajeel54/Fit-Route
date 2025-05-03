@@ -160,8 +160,13 @@ public class postService {
                             false
                     )
             );
-            index++;
         }
+        Query query = new Query(Criteria.where("id").is(myId));
+        User user = mongoTemplate.findOne(query, User.class);
+        if (user == null)
+            throw new RuntimeException("User not found");
+        user.setActivities(user.getActivities()+1);
+        mongoTemplate.save(user);
 
         newPost.setImages(imageUrls);
         return pRepo.save(newPost);

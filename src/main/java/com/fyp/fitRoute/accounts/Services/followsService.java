@@ -1,7 +1,6 @@
 package com.fyp.fitRoute.accounts.Services;
 
 import com.fyp.fitRoute.accounts.Entity.follows;
-import com.fyp.fitRoute.accounts.Entity.profile;
 import com.fyp.fitRoute.accounts.Entity.profileCard;
 import com.fyp.fitRoute.accounts.Repositories.followsRepo;
 import com.fyp.fitRoute.security.Entity.User;
@@ -14,7 +13,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -89,7 +87,13 @@ public class followsService{
                 .map(follows::getFollowing)
                 .toList();
         query = new Query(Criteria.where("id").in(followerIds));
-        return mongoTemplate.find(query, profileCard.class);
+        return mongoTemplate.find(query, profileCard.class).stream()
+                .peek(user -> {
+                    if (checkFollow(userId, user.getId()))
+                        user.setFollow(true);
+                    else
+                        user.setFollow(false);
+                }).toList();
     }
 
     public List<profileCard> getFollowing(String userId){
@@ -100,6 +104,7 @@ public class followsService{
                 .map(follows::getFollowed)
                 .toList();
         query = new Query(Criteria.where("id").in(followingIds));
-        return mongoTemplate.find(query, profileCard.class);
+        return mongoTemplate.find(query, profileCard.class).stream()
+                .peek(user -> user.setFollow(true)).toList();
     }
 }

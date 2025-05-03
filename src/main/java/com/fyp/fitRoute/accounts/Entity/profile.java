@@ -21,6 +21,7 @@ public class profile {
     private String bio;
     private int followers;
     private int followings;
+    private int activities;
     private boolean follow;
     private Date createdAt;
     private Date updatedAt;

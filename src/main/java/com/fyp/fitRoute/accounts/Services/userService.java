@@ -181,7 +181,8 @@ public class userService {
                     query.addCriteria(Criteria.where("followed").is(user.getId()));
                     follows follow = mongoTemplate.findOne(query, follows.class);
                     return follow != null;
-                }).toList();
+                })
+                .peek(user-> user.setFollow(true)).toList();
 
         return users;
     }

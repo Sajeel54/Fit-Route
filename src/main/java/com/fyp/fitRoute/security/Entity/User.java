@@ -37,6 +37,7 @@ public class User {
     private String gender;
     private int followers;
     private int followings;
+    private int activities;
     private Date createdAt;
     private Date updatedAt;
 

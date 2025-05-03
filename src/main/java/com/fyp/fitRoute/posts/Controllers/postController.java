@@ -24,6 +24,17 @@ public class postController {
     @Autowired
     private userService uService;
 
+    @GetMapping
+    public ResponseEntity<?> getPosts(@RequestParam String accountId){
+        try {
+            return new ResponseEntity<>(
+                    pService.getUserPosts(accountId),
+                    HttpStatus.OK);
+        } catch (Exception e){
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+    }
+
     @GetMapping("/news")
     public ResponseEntity<?> getYourNewsFeed(){
         try {

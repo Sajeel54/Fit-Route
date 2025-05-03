@@ -141,7 +141,13 @@ public class userController {
     @Operation( summary = "Search users" )
     public ResponseEntity<?> searchUsers(@RequestParam("u") String username){
         try {
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            User myProfile = uService.getProfile(authentication, "Profile not found.");
             List<profileCard> users = uService.getProfileCard(username);
+            users.stream()
+                    .peek(user -> {
+                        flwService.checkFollow(myProfile.getId(), user.getId());
+                    }).toList();
 
             return new ResponseEntity<>(users, HttpStatus.OK);
         } catch (Exception e){
@@ -181,9 +187,12 @@ public class userController {
     @GetMapping("/All")
     public ResponseEntity<?> getAllProfiles() {
         try {
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            User myProfile = uService.getProfile(authentication, "Profile not found.");
             List<profileCard> users = uService.getProfileOfAll();
             users = users.stream()
                     .filter(user -> !(flwService.checkFollow(user.getId(), user.getId())))
+                    .peek(user -> user.setFollow(flwService.checkFollow(myProfile.getId(), user.getId())))
                     .toList();
             return new ResponseEntity<>(users, HttpStatus.OK);
         } catch (Exception e) {
