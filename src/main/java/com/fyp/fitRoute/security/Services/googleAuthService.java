@@ -28,8 +28,7 @@ public class googleAuthService {
     @Autowired
     private JwtUtils jwtUtil;
 
-    @Value("${google.clientId}")
-    private String googleClientId;
+    private String googleClientId = "333130402881-2l7ihaskg7ds9ogij60pmht5cs4j47sb.apps.googleusercontent.com";
 
     public googleAuthService() {
         this.verifier = new GoogleIdTokenVerifier.Builder(new NetHttpTransport(), JacksonFactory.getDefaultInstance())
@@ -63,7 +62,7 @@ public class googleAuthService {
 
             // Generate unique username
             String username = email.split("@")[0].replace(".", "_").toLowerCase();
-            while (userRepository.findByUsername(username) != null) {
+            while (userRepository.findByUsername(username).isPresent()) {
                 username += "_" + new Random().nextInt(1000);
             }
             user.setUsername(username);
@@ -76,7 +75,7 @@ public class googleAuthService {
             user.setRole("USER"); // 1 = USER
             user.setBio(null);
 
-            user.setGender((String) payload.get("gender"));
+            user.setGender("Unknown");
 
             user.setDob(null); // Requires birthday scope
             user.setFollowers(0);
