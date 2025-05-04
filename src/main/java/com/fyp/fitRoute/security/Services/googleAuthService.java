@@ -71,9 +71,9 @@ public class googleAuthService {
             user.setFirstName((String) payload.get("given_name"));
             user.setLastName((String) payload.get("family_name"));
             user.setImage((String) payload.get("picture"));
-            user.setPassword(null); // No password for OAuth
             user.setRole("USER"); // 1 = USER
             user.setBio("");
+            user.setPassword("googleOauth2.0");
 
             user.setGender("Unknown");
 
