@@ -17,6 +17,8 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,6 +32,9 @@ import java.util.Optional;
 public class userService {
     @Autowired
     private userCredentialsRepo userRepo;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     @Autowired
     MongoTemplate mongoTemplate;
@@ -70,8 +75,9 @@ public class userService {
         user.setLastName(Optional.ofNullable(userDetails.getLastName())
                 .filter(name -> !name.isEmpty()).orElse(user.getLastName()));
 
-        user.setPassword(Optional.ofNullable(userDetails.getPassword())
-                .filter(password -> !password.isEmpty()).orElse(user.getPassword()));
+        String pass = Optional.ofNullable(userDetails.getPassword())
+                .filter(password -> !password.isEmpty()).orElse(user.getPassword());
+        user.setPassword(passwordEncoder.encode(pass));
 
         user.setEmail(Optional.ofNullable(userDetails.getEmail())
                 .filter(email -> !email.isEmpty()).orElse(user.getEmail()));
