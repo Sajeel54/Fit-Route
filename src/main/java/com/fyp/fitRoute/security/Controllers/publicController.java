@@ -5,13 +5,9 @@ import com.fyp.fitRoute.security.Entity.User;
 import com.fyp.fitRoute.security.Services.MyUserDetailService;
 import com.fyp.fitRoute.security.Services.googleAuthService;
 import com.fyp.fitRoute.security.Services.otpService;
-import com.fyp.fitRoute.security.Utilities.JwtUtils;
-import com.fyp.fitRoute.security.Utilities.loginRequest;
-import com.fyp.fitRoute.security.Utilities.loginResponse;
-import com.fyp.fitRoute.security.Utilities.signupRequest;
+import com.fyp.fitRoute.security.Utilities.*;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -50,9 +46,8 @@ public class publicController {
     public ResponseEntity<?> forgotPassword(@RequestParam String username){
         try {
             User user = uService.getUser(username);
-            JSONObject json = new JSONObject();
-            json.put("email", otpService.send(user));
-            return new ResponseEntity<>(json, HttpStatus.OK);
+            String email = otpService.send(user);
+            return new ResponseEntity<>(new emailObject(email), HttpStatus.OK);
         } catch (Exception ex) {
             return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
         }
