@@ -160,6 +160,7 @@ public class postService {
                             false
                     )
             );
+            index++;
         }
         Query query = new Query(Criteria.where("id").is(myId));
         User user = mongoTemplate.findOne(query, User.class);
