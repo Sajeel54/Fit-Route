@@ -73,7 +73,7 @@ public class googleAuthService {
             user.setImage((String) payload.get("picture"));
             user.setPassword(null); // No password for OAuth
             user.setRole("USER"); // 1 = USER
-            user.setBio(null);
+            user.setBio("");
 
             user.setGender("Unknown");
 

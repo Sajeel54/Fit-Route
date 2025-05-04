@@ -100,6 +100,7 @@ public class publicController {
             user.setUpdatedAt(user.getCreatedAt());
             user.setRole("USER");
             user.setActivities(0);
+            user.setBio("");
             user.setFollowers(0);
             user.setFollowings(0);
             user.setGoogleId(null);
