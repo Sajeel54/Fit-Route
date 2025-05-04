@@ -11,6 +11,7 @@ import com.fyp.fitRoute.security.Utilities.loginResponse;
 import com.fyp.fitRoute.security.Utilities.signupRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -49,8 +50,9 @@ public class publicController {
     public ResponseEntity<?> forgotPassword(@RequestParam String username){
         try {
             User user = uService.getUser(username);
-            otpService.send(user);
-            return new ResponseEntity<>(HttpStatus.OK);
+            JSONObject json = new JSONObject();
+            json.put("email", otpService.send(user));
+            return new ResponseEntity<>(json, HttpStatus.OK);
         } catch (Exception ex) {
             return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
         }
