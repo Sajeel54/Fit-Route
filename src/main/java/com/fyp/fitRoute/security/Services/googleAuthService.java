@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
@@ -25,6 +26,9 @@ public class googleAuthService {
     @Autowired
     private userCredentialsRepo userRepository;
     private GoogleIdTokenVerifier verifier;
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
     @Autowired
     private JwtUtils jwtUtil;
 
@@ -73,7 +77,7 @@ public class googleAuthService {
             user.setImage((String) payload.get("picture"));
             user.setRole("USER"); // 1 = USER
             user.setBio("");
-            user.setPassword("googleOauth2.0");
+            user.setPassword(passwordEncoder.encode("googleOauth2.0"));
 
             user.setGender("Unknown");
 

@@ -8,6 +8,7 @@ import com.fyp.fitRoute.recommendations.Components.ANN.annModel;
 import com.fyp.fitRoute.recommendations.Components.ANN.dataPreprocessor;
 import com.fyp.fitRoute.recommendations.Utilities.Filter;
 import com.fyp.fitRoute.security.Entity.User;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -18,6 +19,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+@Slf4j
 @Component
 public class annFilter implements Filter {
     @Autowired
@@ -62,7 +64,7 @@ public class annFilter implements Filter {
         posts.forEach(post -> {
             if (!(postIds.contains(post.getId()))){
                double pred = model.predict(post);
-               System.out.println(pred);
+               log.info(""+pred);
                if (pred >= 0.5){
                    postResponse response;
                    User user = mongoCon.findOne(new Query(Criteria.where("id").is(post.getAccountId())), User.class);

@@ -1,6 +1,7 @@
 package com.fyp.fitRoute.recommendations.Components.ANN;
 
 import com.fyp.fitRoute.posts.Entity.posts;
+import lombok.extern.slf4j.Slf4j;
 import org.deeplearning4j.datasets.iterator.utilty.ListDataSetIterator;
 import org.deeplearning4j.nn.conf.MultiLayerConfiguration;
 import org.deeplearning4j.nn.conf.NeuralNetConfiguration;
@@ -19,6 +20,7 @@ import org.nd4j.linalg.lossfunctions.LossFunctions;
 import java.util.ArrayList;
 import java.util.List;
 
+@Slf4j
 public class annModel {
     private MultiLayerNetwork model;
     private final dataPreprocessor dataConverter;
@@ -74,7 +76,7 @@ public class annModel {
         // Get dataset
         DataSet fullData = dataConverter.dataConverter();
         if (fullData == null || fullData.numExamples() == 0) {
-            System.out.println("No data available for training.");
+            log.info("No data available for training.");
             return;
         }
 
@@ -94,7 +96,7 @@ public class annModel {
         for (int i = 0; i < numEpochs; i++) {
             model.fit(trainIterator);
             trainIterator.reset();
-            System.out.println("Completed epoch " + (i + 1));
+            log.info("Completed epoch " + (i + 1));
         }
 
         // Evaluate
@@ -103,7 +105,7 @@ public class annModel {
         INDArray testLabels = testData.getLabels();
         INDArray predictions = model.output(testFeatures);
         eval.eval(testLabels, predictions);
-        System.out.println("Evaluation: " + eval.stats());
+        log.info("Evaluation: " + eval.stats());
     }
 
     public double predict(posts post){
