@@ -1,6 +1,7 @@
 package com.fyp.fitRoute.recommendations.Controllers;
 
 import com.fyp.fitRoute.accounts.Services.userService;
+import com.fyp.fitRoute.posts.Utilities.postResponse;
 import com.fyp.fitRoute.recommendations.Services.recommendationService;
 import com.fyp.fitRoute.security.Entity.User;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +12,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/recommendations")
@@ -26,10 +29,11 @@ public class recommendationController {
         try {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             User myProfile = uService.getProfile(authentication, "Profile not found");
+            List<postResponse> posts = recommendations.getRecommendations(myProfile.getId());
+            System.out.println(posts.size());
 
             return new ResponseEntity<>(
-                    recommendations.getRecommendations(myProfile.getId())
-                    , HttpStatus.OK);
+                    posts, HttpStatus.OK);
         }catch (Exception ex){
             return new ResponseEntity<>(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }

@@ -1,7 +1,6 @@
 package com.fyp.fitRoute.recommendations.Components.ANN;
 
 import com.fyp.fitRoute.posts.Entity.posts;
-import lombok.extern.slf4j.Slf4j;
 import org.deeplearning4j.datasets.iterator.utilty.ListDataSetIterator;
 import org.deeplearning4j.nn.conf.MultiLayerConfiguration;
 import org.deeplearning4j.nn.conf.NeuralNetConfiguration;
@@ -20,7 +19,7 @@ import org.nd4j.linalg.lossfunctions.LossFunctions;
 import java.util.ArrayList;
 import java.util.List;
 
-@Slf4j
+
 public class annModel {
     private MultiLayerNetwork model;
     private final dataPreprocessor dataConverter;
@@ -82,11 +81,13 @@ public class annModel {
 
         // Shuffle and split (80% train, 20% test)
         fullData.shuffle(42);
-
+        SplitTestAndTrain split = fullData.splitTestAndTrain(0.8);
+        DataSet trainData = split.getTrain();
+        DataSet testData = split.getTest();
 
         // Create iterators
         List<DataSet> trainList = new ArrayList<>();
-        fullData.asList().forEach(trainList::add);
+        trainData.asList().forEach(trainList::add);
         DataSetIterator trainIterator = new ListDataSetIterator<>(trainList, 32);
 
         // Train
@@ -97,6 +98,13 @@ public class annModel {
             System.out.println("Completed epoch " + (i + 1));
         }
 
+        // Evaluate
+        org.deeplearning4j.eval.Evaluation eval = new org.deeplearning4j.eval.Evaluation(1);
+        INDArray testFeatures = testData.getFeatures();
+        INDArray testLabels = testData.getLabels();
+        INDArray predictions = model.output(testFeatures);
+        eval.eval(testLabels, predictions);
+        System.out.println("Evaluation: " + eval.stats());
     }
 
     public double predict(posts post){
