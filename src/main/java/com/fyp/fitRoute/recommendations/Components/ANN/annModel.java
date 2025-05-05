@@ -76,7 +76,7 @@ public class annModel {
         // Get dataset
         DataSet fullData = dataConverter.dataConverter();
         if (fullData == null || fullData.numExamples() == 0) {
-            log.info("No data available for training.");
+            System.out.println("No data available for training.");
             return;
         }
 
@@ -94,7 +94,7 @@ public class annModel {
         for (int i = 0; i < numEpochs; i++) {
             model.fit(trainIterator);
             trainIterator.reset();
-            log.info("Completed epoch " + (i + 1));
+            System.out.println("Completed epoch " + (i + 1));
         }
 
     }

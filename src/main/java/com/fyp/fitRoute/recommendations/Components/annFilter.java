@@ -64,7 +64,7 @@ public class annFilter implements Filter {
         posts.forEach(post -> {
             if (!(postIds.contains(post.getId()))){
                double pred = model.predict(post);
-               log.info(""+pred);
+               System.out.println(pred);
                if (pred >= 0.5){
                    postResponse response;
                    User user = mongoCon.findOne(new Query(Criteria.where("id").is(post.getAccountId())), User.class);
