@@ -91,11 +91,10 @@ public class annModel {
         DataSetIterator trainIterator = new ListDataSetIterator<>(trainList, 32);
 
         // Train
-        int numEpochs = 100;
+        int numEpochs = 200;
         for (int i = 0; i < numEpochs; i++) {
             model.fit(trainIterator);
             trainIterator.reset();
-            System.out.println("Completed epoch " + (i + 1));
         }
 
         // Evaluate
@@ -104,7 +103,6 @@ public class annModel {
         INDArray testLabels = testData.getLabels();
         INDArray predictions = model.output(testFeatures);
         eval.eval(testLabels, predictions);
-        System.out.println("Evaluation: " + eval.stats());
     }
 
     public double predict(posts post){

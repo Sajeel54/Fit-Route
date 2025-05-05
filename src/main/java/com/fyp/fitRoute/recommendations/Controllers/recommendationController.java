@@ -30,7 +30,6 @@ public class recommendationController {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             User myProfile = uService.getProfile(authentication, "Profile not found");
             List<postResponse> posts = recommendations.getRecommendations(myProfile.getId());
-            System.out.println(posts.size());
 
             return new ResponseEntity<>(
                     posts, HttpStatus.OK);
