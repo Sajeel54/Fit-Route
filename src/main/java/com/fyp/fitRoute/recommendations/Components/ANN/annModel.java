@@ -82,13 +82,11 @@ public class annModel {
 
         // Shuffle and split (80% train, 20% test)
         fullData.shuffle(42);
-        SplitTestAndTrain split = fullData.splitTestAndTrain(0.8);
-        DataSet trainData = split.getTrain();
-        DataSet testData = split.getTest();
+
 
         // Create iterators
         List<DataSet> trainList = new ArrayList<>();
-        trainData.asList().forEach(trainList::add);
+        fullData.asList().forEach(trainList::add);
         DataSetIterator trainIterator = new ListDataSetIterator<>(trainList, 32);
 
         // Train
@@ -99,13 +97,6 @@ public class annModel {
             log.info("Completed epoch " + (i + 1));
         }
 
-        // Evaluate
-        org.deeplearning4j.eval.Evaluation eval = new org.deeplearning4j.eval.Evaluation(1);
-        INDArray testFeatures = testData.getFeatures();
-        INDArray testLabels = testData.getLabels();
-        INDArray predictions = model.output(testFeatures);
-        eval.eval(testLabels, predictions);
-        log.info("Evaluation: " + eval.stats());
     }
 
     public double predict(posts post){
