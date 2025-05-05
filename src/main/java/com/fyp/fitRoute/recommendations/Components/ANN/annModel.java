@@ -15,25 +15,25 @@ import org.nd4j.linalg.dataset.SplitTestAndTrain;
 import org.nd4j.linalg.dataset.api.iterator.DataSetIterator;
 import org.nd4j.linalg.learning.config.Adam;
 import org.nd4j.linalg.lossfunctions.LossFunctions;
+import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
 
 
+@Component
 public class annModel {
     private MultiLayerNetwork model;
-    private final dataPreprocessor dataConverter;
+    private dataPreprocessor dataConverter;
 
 
-    public annModel(dataPreprocessor dataConverter) {
-        this.dataConverter = dataConverter;
+    public annModel() {
+        buildModel();
 
     }
 
-//    @PostConstruct
-    public void init() {
-        buildModel();
-        trainModel();
+    public void addConverter(dataPreprocessor dataConverter) {
+        this.dataConverter = dataConverter;
     }
 
     private void buildModel() {
@@ -71,7 +71,7 @@ public class annModel {
         model.setListeners(new ScoreIterationListener(100)); // Print score every 100 iterations
     }
 
-    private void trainModel() {
+    public void trainModel() {
         // Get dataset
         DataSet fullData = dataConverter.dataConverter();
         if (fullData == null || fullData.numExamples() == 0) {

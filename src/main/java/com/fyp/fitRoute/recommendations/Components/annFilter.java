@@ -29,8 +29,8 @@ public class annFilter implements Filter {
 
     private List<String> postIds;
 
+    @Autowired
     private annModel model;
-
 
     @Autowired
     private dataPreprocessor dataProcessor;
@@ -59,8 +59,8 @@ public class annFilter implements Filter {
         List<posts> postsList = getAllPosts();
         List<posts> likedPosts = getLikedPosts(myId);
         dataProcessor.addPosts(postsList, likedPosts);
-        model = new annModel(dataProcessor);
-        model.init();
+        model.addConverter(dataProcessor);
+        model.trainModel();
         posts.forEach(post -> {
             if (!(postIds.contains(post.getId()))){
                double pred = model.predict(post);
