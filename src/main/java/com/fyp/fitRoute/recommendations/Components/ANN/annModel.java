@@ -226,7 +226,7 @@ public class annModel implements Filter {
         log.info("Retraining model...");
         for (User user : users) {
             try {
-                log.error("retraining model for user: id={} / name={} ", user.getId(), user.getUsername());
+                log.info("retraining model for user: id={} / name={} ", user.getId(), user.getUsername());
 
                 accessTimeStamp = Objects.requireNonNullElseGet(
                         redisService.get("Recommendations Access " + user.getId(), Date.class),
