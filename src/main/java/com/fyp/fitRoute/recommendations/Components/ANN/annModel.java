@@ -189,7 +189,6 @@ public class annModel implements Filter {
         for (int i = 0; i < numEpochs; i++) {
             model.fit(trainIterator);
             trainIterator.reset();
-            log.info("Epoch {}: Training complete", i + 1);
         }
 
         // Evaluate
@@ -230,7 +229,7 @@ public class annModel implements Filter {
                 log.error("retraining model for user: id={} / name={} ", user.getId(), user.getUsername());
 
                 accessTimeStamp = Objects.requireNonNullElseGet(
-                        redisService.get("Recommendations Access " + "678bb6e0675e9c3a0b1717d2", Date.class),
+                        redisService.get("Recommendations Access " + user.getId(), Date.class),
                         () -> Date.from(Instant.now().minusSeconds(48L * 60L * 60L))
                 );
                 trainModel(user.getId());
