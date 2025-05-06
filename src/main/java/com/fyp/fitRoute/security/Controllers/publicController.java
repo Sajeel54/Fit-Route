@@ -105,6 +105,9 @@ public class publicController {
             user.setFollowings(0);
             user.setGoogleId(null);
             user.setEmail(request.getEmail());
+            model.modelClear();
+            String url = model.saveModel(user.getId());
+            user.setModelUrl(url);
             User createdUser = uService.addUser(user);
             return new ResponseEntity<>(createdUser, HttpStatus.CREATED);
         } catch (Exception e){
