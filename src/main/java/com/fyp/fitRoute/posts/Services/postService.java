@@ -124,7 +124,7 @@ public class postService {
         User user = mongoTemplate.findOne(new Query(Criteria.where("id").is(accountId)), User.class);
         if (user == null)
             throw new RuntimeException("User not found");
-        return pRepo.findByAccountId(accountId)
+        List<postResponse> response = pRepo.findByAccountId(accountId)
                 .stream()
                 .map(post -> {
                     return new postResponse(
@@ -137,6 +137,8 @@ public class postService {
                     );
                 })
                 .toList();
+        Collections.reverse(response);
+        return response;
     }
 
     @Transactional
