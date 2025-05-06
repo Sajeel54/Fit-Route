@@ -106,8 +106,6 @@ public class publicController {
             user.setGoogleId(null);
             user.setEmail(request.getEmail());
             User createdUser = uService.addUser(user);
-            model.clearModel();
-            model.saveModel(createdUser.getId());
             return new ResponseEntity<>(createdUser, HttpStatus.CREATED);
         } catch (Exception e){
             return new ResponseEntity<>("User Already Exists", HttpStatus.BAD_REQUEST);

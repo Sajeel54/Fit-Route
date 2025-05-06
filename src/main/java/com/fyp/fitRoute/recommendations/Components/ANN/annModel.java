@@ -40,85 +40,18 @@ import java.util.*;
 
 @Component
 @Slf4j
-public class annModel implements Filter {
+public class annModel{
     private MultiLayerNetwork model;
-    @Autowired
     private dataPreprocessor dataConverter;
     @Autowired
     private MongoTemplate mongoCon;
     @Autowired
     private cloudinaryService cloudinaryService;
-    @Autowired
-    private userCredentialsRepo userRepo;
-    @Autowired
-    private redisService redisService;
-
-    private Date accessTimeStamp;
-
-    private List<String> postIds;
 
 
     public annModel() {
         buildModel();
 
-    }
-
-    @Override
-    public List<String> getSentPosts() {
-        return postIds;
-    }
-
-    @Override
-    public void addPostIds(List<String> postIds) {
-        this.postIds = postIds;
-    }
-
-    @Override
-    public void setTimeStamp(Date accessTimeStamp) {
-        this.accessTimeStamp = accessTimeStamp;
-    }
-
-    public void readModel(String url) throws Exception {
-        File modelFile = cloudinaryService.downloadFile(url, "model.zip");
-
-        // Step 2: Load the model using DL4J
-        model = MultiLayerNetwork.load(modelFile, true);
-
-        // Step 3: Clean up the temporary file
-        modelFile.delete();
-    }
-
-    @Override
-    public List<postResponse> getPosts(String myId) throws Exception {
-        List<postResponse> responseList = new ArrayList<>();
-        List<posts> posts = getNewPosts(myId);
-        if (posts.isEmpty()) return responseList;
-        Optional<User> myData = userRepo.findById(myId);
-        if (myData.isEmpty()) throw new RuntimeException("User not found");
-        readModel(myData.get().getModelUrl());
-        posts.forEach(post -> {
-            if (!(postIds.contains(post.getId()))){
-                double pred = predict(post);
-                if (pred >= 0.5){
-                    postResponse response;
-                    User user = mongoCon.findOne(new Query(Criteria.where("id").is(post.getAccountId())), User.class);
-                    if (user != null) {
-                        response = new postResponse(
-                                post.getId(), post.getTitle(), post.getLikes(), post.getComments(),
-                                user.getUsername(), user.getImage(), post.getDescription(),
-                                post.getTags(), post.getImages(), post.getCategory(),
-                                post.getCreatedAt(), post.getUpdatedAt(), false,
-                                mongoCon.findOne(
-                                        new Query(Criteria.where("id").is(post.getRouteId())), route.class
-                                )
-                        );
-                        responseList.add(response);
-                        postIds.add(response.getId());
-                    }
-                }
-            }
-        });
-        return responseList;
     }
 
     public void addConverter(dataPreprocessor dataConverter) {
@@ -160,15 +93,10 @@ public class annModel implements Filter {
         model.setListeners(new ScoreIterationListener(100)); // Print score every 100 iterations
     }
 
-    public void trainModel(String myId) {
-        List<postResponse> responseList = new ArrayList<>();
-        List<posts> postsList = getAllPosts();
-        List<posts> likedPosts = getLikedPosts(myId);
-        if (postsList.isEmpty() || likedPosts.isEmpty()) return;
-        dataConverter.addPosts(postsList, likedPosts);
+    public void trainModel() {
         // Get dataset
         DataSet fullData = dataConverter.dataConverter();
-        if (fullData == null || fullData.numExamples() == 0) {
+        if (fullData == null || fullData.numExamples() < 2) {
             System.out.println("No data available for training.");
             return;
         }
@@ -199,108 +127,11 @@ public class annModel implements Filter {
         eval.eval(testLabels, predictions);
     }
 
-    @Transactional
-    public void saveModel(String myId) {
-        File modelFile = new File("model.zip");
-        try {
-            User user = userRepo.findById(myId).orElseThrow(() -> new RuntimeException("User not found"));
-            model.save(modelFile);
-            String url = cloudinaryService.uploadModel(modelFile, myId);
-            user.setModelUrl(url);
-            userRepo.save(user);
-        } catch (IOException e) {
-            log.error("Error saving model: {}", e.getMessage());
-        }
-    }
-
     public double predict(posts post){
         INDArray input = dataConverter.convertPost(post);
 
         INDArray output = model.output(input);
         return output.getDouble(0); // Probabi
-    }
-
-    @Scheduled(fixedRate = 7 * 24 * 60 * 60 * 1000) // 7 days
-    public void retrainModel() {
-        List<User> users = userRepo.findAll();
-        log.info("Retraining model...");
-        for (User user : users) {
-            try {
-                log.info("retraining model for user: id={} / name={} ", user.getId(), user.getUsername());
-
-                accessTimeStamp = Objects.requireNonNullElseGet(
-                        redisService.get("Recommendations Access " + user.getId(), Date.class),
-                        () -> Date.from(Instant.now().minusSeconds(48L * 60L * 60L))
-                );
-                trainModel(user.getId());
-                saveModel(user.getId());
-                accessTimeStamp = null;
-            } catch (Exception e) {
-                log.error("Error retraining model for user: id={} / name={} : {}", user.getId(), user.getUsername(), e.getMessage());
-            }
-        }
-        log.info("Model retrained.");
-
-    }
-
-    public void clearModel() {
-        model.clear();
-    }
-
-    public List<posts> getAllPosts(){
-        Date date = new Date(accessTimeStamp.getTime()-(48*60*48*100));
-        return mongoCon.findAll(posts.class)
-                .stream()
-                .filter(post -> (post.getCreatedAt().after(date) && post.getCreatedAt().before(accessTimeStamp)))
-                .toList();
-    }
-
-    public List<posts> getNewPosts(String myId){
-        Query query = new Query(Criteria.where("createdAt").gt(accessTimeStamp));
-        List<String> tempIds  = mongoCon.find(query, posts.class).stream()
-                .filter(post -> !post.getAccountId().equals(myId))
-                .map(posts::getId)
-                .toList();
-
-        tempIds = filterLikedPosts(tempIds, myId);
-        query = new Query(Criteria.where("id").in(tempIds));
-        return mongoCon.find(query, posts.class);
-    }
-
-    private List<String> filterLikedPosts(List<String> ids, String myId) {
-        // Step 1: Find postIds liked by myId
-        Query query = new Query(Criteria.where("postId").in(ids)
-                .and("accountId").is(myId));
-
-        // Get the postIds liked by myId
-        List<String> likedByMe = mongoCon.find(query, likes.class).stream()
-                .map(likes::getReferenceId)
-                .distinct() // Ensure no duplicates
-                .toList();
-
-        // Step 2: Return ids not present in likedByMe
-        return ids.stream()
-                .filter(postId -> !likedByMe.contains(postId))
-                .toList();
-    }
-
-    private List<posts> getLikedPosts(String myId){
-        Query query = new Query(Criteria.where("accountId").is(myId));
-        List<likes> temp = mongoCon.find(query, likes.class);
-
-        List<String> tempIds = temp.stream()
-                .map(likes::getReferenceId)
-                .toList();
-
-        Criteria criteria = new Criteria();
-        query = new Query(criteria.andOperator(
-                Criteria.where("id").in(tempIds),
-                Criteria.where("createdAt").lt(accessTimeStamp)
-                        .and("createdAt").gt(Date.from(Instant.now().minusSeconds(48L * 60L * 60L)))
-           )
-        );
-
-        return mongoCon.find(query, posts.class);
     }
 
 }

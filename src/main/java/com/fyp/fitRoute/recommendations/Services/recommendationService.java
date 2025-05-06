@@ -28,6 +28,8 @@ public class recommendationService {
 
     @Autowired
     private socialFilter socialFilter;
+    @Autowired
+    private annFilter annFilter;
 
     @Autowired
     private annModel model;
@@ -35,8 +37,7 @@ public class recommendationService {
     public void setFilters(String myId){
         manager.clearFilters();
         manager.addFilter(socialFilter);
-//        manager.addFilter(annFilter);
-        manager.addFilter(model);
+        manager.addFilter(annFilter);
     }
 
     public List<postResponse> getRecommendations(String myId) throws Exception {
