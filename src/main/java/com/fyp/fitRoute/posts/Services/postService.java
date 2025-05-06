@@ -116,7 +116,6 @@ public class postService {
             }
         List<postResponse> responseList = new ArrayList<>();
         postList.forEach((k,v) -> responseList.add(v));
-        Collections.reverse(responseList);
         return responseList;
     }
 
@@ -124,7 +123,7 @@ public class postService {
         User user = mongoTemplate.findOne(new Query(Criteria.where("id").is(accountId)), User.class);
         if (user == null)
             throw new RuntimeException("User not found");
-        List<postResponse> response = pRepo.findByAccountId(accountId)
+        return pRepo.findByAccountId(accountId)
                 .stream()
                 .map(post -> {
                     return new postResponse(
@@ -137,8 +136,6 @@ public class postService {
                     );
                 })
                 .toList();
-        Collections.reverse(response);
-        return response;
     }
 
     @Transactional
