@@ -11,6 +11,7 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
@@ -52,6 +53,8 @@ public class recommendationService {
         manager.setTimeStamp(accessTimeStamp);
         manager.setMyId(myId);
         manager.start();
-        return manager.getPosts().reversed();
+        List<postResponse> posts = manager.getPosts();
+        Collections.reverse(posts);
+        return posts;
     }
 }
