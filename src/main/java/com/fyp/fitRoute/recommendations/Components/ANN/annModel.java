@@ -248,14 +248,10 @@ public class annModel implements Filter {
     }
 
     public List<posts> getAllPosts(){
-//        Date date = new Date(accessTimeStamp.getTime()-(48*60*48*100));
-//        return mongoCon.findAll(posts.class)
-//                .stream()
-//                .filter(post -> (post.getCreatedAt().after(date) && post.getCreatedAt().before(accessTimeStamp)))
-//                .toList();
+        Date date = new Date(accessTimeStamp.getTime()-(48*60*48*100));
         return mongoCon.findAll(posts.class)
                 .stream()
-                .filter(post -> post.getCreatedAt().before(accessTimeStamp))
+                .filter(post -> (post.getCreatedAt().after(date) && post.getCreatedAt().before(accessTimeStamp)))
                 .toList();
     }
 
@@ -296,7 +292,13 @@ public class annModel implements Filter {
                 .map(likes::getReferenceId)
                 .toList();
 
-        query = new Query(Criteria.where("id").in(tempIds));
+        Criteria criteria = new Criteria();
+        query = new Query(criteria.andOperator(
+                Criteria.where("id").in(tempIds),
+                Criteria.where("createdAt").lt(accessTimeStamp)
+                        .and("createdAt").gt(Date.from(Instant.now().minusSeconds(48L * 60L * 60L)))
+           )
+        );
 
         return mongoCon.find(query, posts.class);
     }
