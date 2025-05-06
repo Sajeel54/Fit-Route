@@ -37,5 +37,5 @@ public class User {
     private int activities;
     private Date createdAt;
     private Date updatedAt;
-
+    private String modelUrl;
 }

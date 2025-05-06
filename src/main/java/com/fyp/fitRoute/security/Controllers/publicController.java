@@ -1,6 +1,7 @@
 package com.fyp.fitRoute.security.Controllers;
 
 import com.fyp.fitRoute.accounts.Services.userService;
+import com.fyp.fitRoute.recommendations.Components.ANN.annModel;
 import com.fyp.fitRoute.security.Entity.User;
 import com.fyp.fitRoute.security.Services.MyUserDetailService;
 import com.fyp.fitRoute.security.Services.googleAuthService;
@@ -41,6 +42,8 @@ public class publicController {
     private otpService otpService;
     @Autowired
     private googleAuthService oauthService;
+    @Autowired
+    private annModel model;
 
     @GetMapping("/forgot-Password")
     public ResponseEntity<?> forgotPassword(@RequestParam String username){
@@ -103,6 +106,8 @@ public class publicController {
             user.setGoogleId(null);
             user.setEmail(request.getEmail());
             User createdUser = uService.addUser(user);
+            model.clearModel();
+            model.saveModel(createdUser.getId());
             return new ResponseEntity<>(createdUser, HttpStatus.CREATED);
         } catch (Exception e){
             return new ResponseEntity<>("User Already Exists", HttpStatus.BAD_REQUEST);

@@ -11,5 +11,5 @@ public interface Filter {
     public List<String> getSentPosts();
     public abstract void addPostIds(List<String> postIds);
     public void setTimeStamp(Date accessTimeStamp);
-    public List<postResponse> getPosts(String myId);
+    public List<postResponse> getPosts(String myId) throws Exception;
 }

@@ -25,7 +25,7 @@ public class filterManager {
         this.userId = myId;
     }
 
-    public void start(){
+    public void start() throws Exception {
         List<String> ids = new ArrayList<>();
         myPosts.clear();
         for (Filter filter: filters){

@@ -2,6 +2,7 @@ package com.fyp.fitRoute.recommendations.Services;
 
 import com.fyp.fitRoute.inventory.Services.redisService;
 import com.fyp.fitRoute.posts.Utilities.postResponse;
+import com.fyp.fitRoute.recommendations.Components.ANN.annModel;
 import com.fyp.fitRoute.recommendations.Components.annFilter;
 import com.fyp.fitRoute.recommendations.Components.filterManager;
 import com.fyp.fitRoute.recommendations.Components.socialFilter;
@@ -29,15 +30,16 @@ public class recommendationService {
     private socialFilter socialFilter;
 
     @Autowired
-    private annFilter annFilter;
+    private annModel model;
 
     public void setFilters(String myId){
         manager.clearFilters();
         manager.addFilter(socialFilter);
-        manager.addFilter(annFilter);
+//        manager.addFilter(annFilter);
+        manager.addFilter(model);
     }
 
-    public List<postResponse> getRecommendations(String myId){
+    public List<postResponse> getRecommendations(String myId) throws Exception {
         setFilters(myId);
         Date date = Date.from(Instant.now());
 

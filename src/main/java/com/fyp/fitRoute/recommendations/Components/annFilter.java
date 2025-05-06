@@ -60,7 +60,6 @@ public class annFilter implements Filter {
         List<posts> likedPosts = getLikedPosts(myId);
         dataProcessor.addPosts(postsList, likedPosts);
         model.addConverter(dataProcessor);
-        model.trainModel();
         posts.forEach(post -> {
             if (!(postIds.contains(post.getId()))){
                double pred = model.predict(post);
@@ -99,15 +98,14 @@ public class annFilter implements Filter {
     }
 
     public List<posts> getNewPosts(String myId){
-        List<posts> postList = mongoCon.findAll(posts.class).stream()
-                .filter(post -> post.getCreatedAt().after(accessTimeStamp))
+        Query query = new Query(Criteria.where("createdAt").lt(accessTimeStamp));
+        List<String> tempIds  = mongoCon.find(query, posts.class).stream()
+                .filter(post -> !post.getAccountId().equals(myId))
+                .map(posts::getId)
                 .toList();
 
-        List<String> tempIds = postList.stream()
-                        .map(posts::getId)
-                                .toList();
         tempIds = filterLikedPosts(tempIds, myId);
-        Query query = new Query(Criteria.where("id").in(tempIds));
+        query = new Query(Criteria.where("id").in(tempIds));
         return mongoCon.find(query, posts.class);
     }
 
