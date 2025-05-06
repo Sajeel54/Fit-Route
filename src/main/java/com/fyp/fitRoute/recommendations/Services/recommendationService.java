@@ -52,7 +52,6 @@ public class recommendationService {
         manager.setTimeStamp(accessTimeStamp);
         manager.setMyId(myId);
         manager.start();
-
-        return manager.getPosts();
+        return manager.getPosts().reversed();
     }
 }

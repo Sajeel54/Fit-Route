@@ -116,7 +116,7 @@ public class postService {
             }
         List<postResponse> responseList = new ArrayList<>();
         postList.forEach((k,v) -> responseList.add(v));
-        return responseList;
+        return responseList.reversed();
     }
 
     public List<postResponse> getUserPosts(String accountId){
