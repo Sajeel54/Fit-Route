@@ -113,7 +113,7 @@ public class annModel{
         DataSetIterator trainIterator = new ListDataSetIterator<>(trainList, 32);
 
         // Train
-        int numEpochs = 100;
+        int numEpochs = 200;
         for (int i = 0; i < numEpochs; i++) {
             model.fit(trainIterator);
             trainIterator.reset();
