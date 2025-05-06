@@ -84,6 +84,7 @@ public class annFilter implements Filter {
                }
             }
         });
+        model.modelClear();
         return responseList;
     }
 

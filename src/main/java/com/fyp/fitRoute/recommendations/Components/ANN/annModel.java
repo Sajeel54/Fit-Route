@@ -93,8 +93,9 @@ public class annModel{
         model.setListeners(new ScoreIterationListener(100)); // Print score every 100 iterations
     }
 
-    public void trainModel() {
+    public void trainModel(String url) throws Exception {
         // Get dataset
+        loadModel(url);
         DataSet fullData = dataConverter.dataConverter();
         if (fullData == null || fullData.numExamples() < 2) {
             System.out.println("No data available for training.");
@@ -125,6 +126,22 @@ public class annModel{
         INDArray testLabels = testData.getLabels();
         INDArray predictions = model.output(testFeatures);
         eval.eval(testLabels, predictions);
+    }
+
+    public void modelClear(){ model.clear(); }
+
+    public String saveModel(String myId) throws IOException {
+        File modelFile = new File("model.zip");
+        model.save(modelFile);
+        String url = cloudinaryService.uploadModel(modelFile, myId);
+        modelFile.delete();
+        return url;
+    }
+
+    public void loadModel(String url) throws Exception {
+        File modelFile = cloudinaryService.downloadFile(url, "model.zip");
+        model = MultiLayerNetwork.load(modelFile, true);
+        modelFile.delete();
     }
 
     public double predict(posts post){
