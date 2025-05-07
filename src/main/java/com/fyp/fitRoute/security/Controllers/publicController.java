@@ -9,6 +9,7 @@ import com.fyp.fitRoute.security.Services.otpService;
 import com.fyp.fitRoute.security.Utilities.*;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -26,6 +27,7 @@ import java.util.Date;
 @RestController
 @RequestMapping("/public")
 @Tag( name="Public Controller" , description = "These endpoints are public and require no Authentication")
+@Slf4j
 public class publicController {
 
     @Autowired
@@ -46,17 +48,20 @@ public class publicController {
     private annModel model;
 
     @GetMapping("/forgot-Password")
+    @Operation( summary = "Send OTP to the user email" )
     public ResponseEntity<?> forgotPassword(@RequestParam String username){
         try {
             User user = uService.getUser(username);
             String email = otpService.send(user);
             return new ResponseEntity<>(new emailObject(email), HttpStatus.OK);
         } catch (Exception ex) {
+            log.error("Error occurred while sending OTP: {}", ex.getMessage());
             return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
 
     @GetMapping("/verify-otp")
+    @Operation( summary = "Verify OTP sent to the user email" )
     public ResponseEntity<?> verifyOtp(@RequestParam String username, @RequestParam String otp){
         try {
             UserDetails user = null;
@@ -72,6 +77,7 @@ public class publicController {
 
             return new ResponseEntity<>(response, HttpStatus.OK);
         } catch (Exception ex) {
+            log.error("Error occurred while verifying OTP: {}", ex.getMessage());
             return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
@@ -83,6 +89,7 @@ public class publicController {
             loginResponse response = oauthService.authenticateWithGoogle(token);
             return new ResponseEntity<>(response, HttpStatus.CREATED);
         } catch (Exception e){
+            log.error("Error occurred while creating user: {}", e.getMessage());
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
@@ -111,6 +118,7 @@ public class publicController {
             User createdUser = uService.addUser(user);
             return new ResponseEntity<>(createdUser, HttpStatus.CREATED);
         } catch (Exception e){
+            log.error("Error occurred while creating user: {}", e.getMessage());
             return new ResponseEntity<>("User Already Exists", HttpStatus.BAD_REQUEST);
         }
     }
@@ -133,6 +141,7 @@ public class publicController {
                 throw new UsernameNotFoundException("Invalid credentials");
             }
         } catch (Exception e){
+            log.error("Error occurred while authenticating user: {}", e.getMessage());
             return new ResponseEntity<>(e.getMessage(), HttpStatus.UNAUTHORIZED);
         }
     }

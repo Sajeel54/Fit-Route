@@ -9,6 +9,7 @@ import com.fyp.fitRoute.accounts.Services.userService;
 import com.fyp.fitRoute.security.Entity.User;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,6 +24,7 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/Profile")
 @Tag( name = "User Controller" , description = "Endpoints for profile managements")
+@Slf4j
 public class userController {
     @Autowired
     private userService uService;
@@ -40,6 +42,7 @@ public class userController {
                 throw new Exception("Empty");
             return new ResponseEntity<>(found, HttpStatus.OK);
         } catch (Exception e){
+            log.error("Error getting all users: {}", e.getMessage());
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
 
         }
@@ -53,6 +56,7 @@ public class userController {
             User myProfile = uService.getProfile(authentication, "Your Profile not identified");
             return new ResponseEntity<>(myProfile, HttpStatus.OK);
         } catch (Exception e){
+            log.error("Error getting user profile: {}", e.getMessage());
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
 
         }
@@ -71,6 +75,7 @@ public class userController {
                     HttpStatus.OK);
 
         } catch (Exception e) {
+            log.error("Error getting followers: {}", e.getMessage());
             return new ResponseEntity<>(e.getMessage(), HttpStatus.NO_CONTENT);
         }
     }
@@ -87,6 +92,7 @@ public class userController {
                     HttpStatus.OK);
 
         } catch (Exception e) {
+            log.error("Error getting followings: {}", e.getMessage());
             return new ResponseEntity<>(e.getMessage(), HttpStatus.NO_CONTENT);
         }
     }
@@ -102,6 +108,7 @@ public class userController {
 
             return new ResponseEntity<>("Profile created successfully!", HttpStatus.OK);
         } catch (Exception e){
+            log.error("Error setting up profile: {}", e.getMessage());
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
@@ -115,6 +122,7 @@ public class userController {
             User saved = uService.updateUser(myProfile.getId(), userDetails);
             return new ResponseEntity<>(saved, HttpStatus.OK);
         } catch (Exception e){
+            log.error("Error updating user profile: {}", e.getMessage());
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
 
         }
@@ -132,6 +140,7 @@ public class userController {
             else
                 throw new Exception("User not deleted");
         } catch (Exception e){
+            log.error("Error deleting user profile: {}", e.getMessage());
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
 
         }
@@ -151,6 +160,7 @@ public class userController {
 
             return new ResponseEntity<>(users, HttpStatus.OK);
         } catch (Exception e){
+            log.error("Error searching users: {}", e.getMessage());
             return new ResponseEntity<>(e.getMessage(), HttpStatus.NO_CONTENT);
         }
     }
@@ -165,12 +175,13 @@ public class userController {
 
             return new ResponseEntity<>(users, HttpStatus.OK);
         } catch (Exception e){
+            log.error("Error searching followed users: {}", e.getMessage());
             return new ResponseEntity<>(e.getMessage(), HttpStatus.NO_CONTENT);
         }
     }
 
     @GetMapping("/search")
-    @Operation( summary = "Search users" )
+    @Operation( summary = "search profile of a user to visit" )
     public ResponseEntity<?> getUserProfile(@RequestParam("u") String username){
         try {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -180,6 +191,7 @@ public class userController {
 
             return new ResponseEntity<>(u, HttpStatus.OK);
         } catch (Exception e){
+            log.error("Error getting user profile: {}", e.getMessage());
             return new ResponseEntity<>(e.getMessage(), HttpStatus.NO_CONTENT);
         }
     }
@@ -197,6 +209,7 @@ public class userController {
                     .toList();
             return new ResponseEntity<>(users, HttpStatus.OK);
         } catch (Exception e) {
+            log.error("Error getting all users: {}", e.getMessage());
             return new ResponseEntity<>(e.getMessage(), HttpStatus.NO_CONTENT);
         }
     }

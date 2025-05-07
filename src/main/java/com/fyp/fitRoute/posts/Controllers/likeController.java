@@ -7,6 +7,7 @@ import com.fyp.fitRoute.posts.Utilities.likeResponse;
 import com.fyp.fitRoute.security.Entity.User;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,6 +20,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/likes")
 @Tag(name = "Like Controller", description = "Like API endpoints")
+@Slf4j
 public class likeController {
     @Autowired
     private likeService likeService;
@@ -34,6 +36,7 @@ public class likeController {
                     likes,
                     HttpStatus.OK);
         } catch (Exception e) {
+            log.error("Error getting likes: {}", e.getMessage());
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
@@ -47,6 +50,7 @@ public class likeController {
             boolean like = likeService.checkLike(referenceId, myProfile.getId());
             return new ResponseEntity<>(like, HttpStatus.OK);
         } catch (Exception e) {
+            log.error("Error checking like: {}", e.getMessage());
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
@@ -60,6 +64,7 @@ public class likeController {
             likes like = likeService.addLike(postId, myProfile.getId());
             return new ResponseEntity<>(like, HttpStatus.OK);
         } catch (Exception e){
+            log.error("Error adding like: {}", e.getMessage());
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
@@ -73,6 +78,7 @@ public class likeController {
             likes like = likeService.addLikeToComments(commentId, myProfile.getId());
             return new ResponseEntity<>(like, HttpStatus.OK);
         } catch (Exception e){
+            log.error("Error adding like to comment: {}", e.getMessage());
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
@@ -86,6 +92,7 @@ public class likeController {
             likeService.deleteLike(postId, myProfile.getId());
             return new ResponseEntity<>(HttpStatus.OK);
         } catch (Exception e){
+            log.error("Error deleting like: {}", e.getMessage());
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
@@ -99,6 +106,7 @@ public class likeController {
             likeService.deleteLikeFromComments(postId, myProfile.getId());
             return new ResponseEntity<>(HttpStatus.OK);
         } catch (Exception e){
+            log.error("Error deleting like from comment: {}", e.getMessage());
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }

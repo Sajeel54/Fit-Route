@@ -8,6 +8,7 @@ import com.fyp.fitRoute.notifications.Services.notificationService;
 import com.fyp.fitRoute.security.Entity.User;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,6 +21,7 @@ import java.util.Optional;
 
 @RestController
 @Tag( name = "Follow Controller" )
+@Slf4j
 public class followsController {
 
     @Autowired
@@ -50,6 +52,7 @@ public class followsController {
 //            );
             return new ResponseEntity<>(follow, HttpStatus.OK);
         } catch (Exception e) {
+            log.error("Error following user: {}", e.getMessage());
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
@@ -69,6 +72,7 @@ public class followsController {
             boolean checkDeletion =  flwService.deleteFollow(myProfile, followed.get());
             return new ResponseEntity<>(checkDeletion, HttpStatus.OK);
         } catch (Exception e) {
+            log.error("Error unfollowing user: {}", e.getMessage());
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
@@ -82,6 +86,7 @@ public class followsController {
                     HttpStatus.OK);
 
         } catch (Exception e) {
+            log.error("Error getting followers: {}", e.getMessage());
             return new ResponseEntity<>(e.getMessage(), HttpStatus.NO_CONTENT);
         }
     }
@@ -99,6 +104,7 @@ public class followsController {
                     HttpStatus.OK);
 
         } catch (Exception e) {
+            log.error("Error getting followings: {}", e.getMessage());
             return new ResponseEntity<>(e.getMessage(), HttpStatus.NO_CONTENT);
         }
     }

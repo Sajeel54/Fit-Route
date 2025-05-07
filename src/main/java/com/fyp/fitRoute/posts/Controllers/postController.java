@@ -8,6 +8,7 @@ import com.fyp.fitRoute.posts.Utilities.postResponse;
 import com.fyp.fitRoute.security.Entity.User;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,6 +22,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/post")
 @Tag(name = "Post Controller", description = "Post API endpoints")
+@Slf4j
 public class postController {
     @Autowired
     private postService pService;
@@ -35,6 +37,7 @@ public class postController {
                     pService.getUserPosts(accountId),
                     HttpStatus.OK);
         } catch (Exception e){
+            log.error("Error getting posts: {}", e.getMessage());
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
@@ -50,6 +53,7 @@ public class postController {
 
             return new ResponseEntity<>(posts,HttpStatus.OK);
         } catch (Exception e){
+            log.error("Error getting news feed: {}", e.getMessage());
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
@@ -65,6 +69,7 @@ public class postController {
                     pService.getUserPosts(myProfile.getId()),
                     HttpStatus.OK);
         } catch (Exception e){
+            log.error("Error getting your posts: {}", e.getMessage());
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
@@ -82,6 +87,7 @@ public class postController {
 
             return new ResponseEntity<>(newPost, HttpStatus.OK);
         } catch (Exception e){
+            log.error("Error adding post: {}", e.getMessage());
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
@@ -95,6 +101,7 @@ public class postController {
             pService.deletePost(myProfile.getId(), postId);
             return new ResponseEntity<>(HttpStatus.OK);
         } catch (Exception e){
+            log.error("Error deleting post: {}", e.getMessage());
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }

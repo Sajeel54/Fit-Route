@@ -7,6 +7,7 @@ import com.fyp.fitRoute.posts.Utilities.commentRequest;
 import com.fyp.fitRoute.security.Entity.User;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.constraints.NotNull;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,6 +20,7 @@ import java.util.Objects;
 @RestController
 @RequestMapping("/comments")
 @Tag(name = "Comment Controller", description = "Comment API endpoints")
+@Slf4j
 public class commentController {
     @Autowired
     private commentService commentService;
@@ -30,6 +32,7 @@ public class commentController {
         try {
             return new ResponseEntity<>(commentService.getByPostId(postId), HttpStatus.OK);
         } catch (Exception e){
+            log.error("Error getting comments: {}", e.getMessage());
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
@@ -39,6 +42,7 @@ public class commentController {
         try {
             return new ResponseEntity<>(commentService.getByCommentId(referenceId), HttpStatus.OK);
         } catch (Exception e){
+            log.error("Error getting replies to comment: {}", e.getMessage());
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
@@ -52,6 +56,7 @@ public class commentController {
             comments comment = commentService.addComment(request, myProfile.getId());
             return new ResponseEntity<>(comment, HttpStatus.OK);
         } catch (Exception e){
+            log.error("Error adding comment: {}", e.getMessage());
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
@@ -66,6 +71,7 @@ public class commentController {
             commentService.deleteComment(comment);
             return new ResponseEntity<>(HttpStatus.OK);
         } catch (Exception e){
+            log.error("Error deleting comment: {}", e.getMessage());
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
