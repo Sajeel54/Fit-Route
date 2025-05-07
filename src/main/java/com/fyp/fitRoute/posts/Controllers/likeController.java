@@ -38,6 +38,19 @@ public class likeController {
         }
     }
 
+    @GetMapping("/checkLike")
+    @Operation(summary = "Check if user liked the post")
+    public ResponseEntity<?> checkLike(@RequestParam String referenceId){
+        try {
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            User myProfile = userService.getProfile(authentication, "your profile not identified");
+            boolean like = likeService.checkLike(referenceId, myProfile.getId());
+            return new ResponseEntity<>(like, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+    }
+
     @PostMapping
     @Operation(summary = "Add like to post")
     public ResponseEntity<?> addLike(@RequestParam String postId){

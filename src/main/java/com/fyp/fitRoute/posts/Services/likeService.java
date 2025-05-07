@@ -84,6 +84,10 @@ public class likeService {
         return likeRepo.save(newLike);
     }
 
+    public boolean checkLike(String referenceId, String myId){
+        return likeRepo.findByReferenceIdAndAccountId(referenceId, myId).isPresent();
+    }
+
     @Transactional
     public likes addLikeToComments(String referenceId, String myId){
         Date date = Date.from(Instant.now());
