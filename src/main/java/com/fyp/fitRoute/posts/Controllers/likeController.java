@@ -38,7 +38,7 @@ public class likeController {
         }
     }
 
-    @GetMapping("/checkLike")
+    @GetMapping("/check-like")
     @Operation(summary = "Check if user liked the post")
     public ResponseEntity<?> checkLike(@RequestParam String referenceId){
         try {
