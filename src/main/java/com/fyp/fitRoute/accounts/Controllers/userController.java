@@ -6,6 +6,7 @@ import com.fyp.fitRoute.accounts.Utilities.UserDto;
 import com.fyp.fitRoute.accounts.Utilities.profileRequest;
 import com.fyp.fitRoute.accounts.Services.followsService;
 import com.fyp.fitRoute.accounts.Services.userService;
+import com.fyp.fitRoute.inventory.Utilities.Response;
 import com.fyp.fitRoute.security.Entity.User;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -18,6 +19,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.Instant;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -43,8 +46,7 @@ public class userController {
             return new ResponseEntity<>(found, HttpStatus.OK);
         } catch (Exception e){
             log.error("Error getting all users: {}", e.getMessage());
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
-
+            return new ResponseEntity<>(new Response(e.getMessage(), Date.from(Instant.now())), HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -57,7 +59,7 @@ public class userController {
             return new ResponseEntity<>(myProfile, HttpStatus.OK);
         } catch (Exception e){
             log.error("Error getting user profile: {}", e.getMessage());
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new Response(e.getMessage(), Date.from(Instant.now())), HttpStatus.BAD_REQUEST);
 
         }
     }
@@ -76,7 +78,7 @@ public class userController {
 
         } catch (Exception e) {
             log.error("Error getting followers: {}", e.getMessage());
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.NO_CONTENT);
+            return new ResponseEntity<>(new Response(e.getMessage(), Date.from(Instant.now())), HttpStatus.NO_CONTENT);
         }
     }
 
@@ -93,7 +95,7 @@ public class userController {
 
         } catch (Exception e) {
             log.error("Error getting followings: {}", e.getMessage());
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.NO_CONTENT);
+            return new ResponseEntity<>(new Response(e.getMessage(), Date.from(Instant.now())), HttpStatus.NO_CONTENT);
         }
     }
 
@@ -109,7 +111,7 @@ public class userController {
             return new ResponseEntity<>("Profile created successfully!", HttpStatus.OK);
         } catch (Exception e){
             log.error("Error setting up profile: {}", e.getMessage());
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new Response(e.getMessage(), Date.from(Instant.now())), HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -123,8 +125,7 @@ public class userController {
             return new ResponseEntity<>(saved, HttpStatus.OK);
         } catch (Exception e){
             log.error("Error updating user profile: {}", e.getMessage());
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
-
+            return new ResponseEntity<>(new Response(e.getMessage(), Date.from(Instant.now())), HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -141,8 +142,7 @@ public class userController {
                 throw new Exception("User not deleted");
         } catch (Exception e){
             log.error("Error deleting user profile: {}", e.getMessage());
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
-
+            return new ResponseEntity<>(new Response(e.getMessage(), Date.from(Instant.now())), HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -161,7 +161,7 @@ public class userController {
             return new ResponseEntity<>(users, HttpStatus.OK);
         } catch (Exception e){
             log.error("Error searching users: {}", e.getMessage());
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.NO_CONTENT);
+            return new ResponseEntity<>(new Response(e.getMessage(), Date.from(Instant.now())), HttpStatus.NO_CONTENT);
         }
     }
 
@@ -176,7 +176,7 @@ public class userController {
             return new ResponseEntity<>(users, HttpStatus.OK);
         } catch (Exception e){
             log.error("Error searching followed users: {}", e.getMessage());
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.NO_CONTENT);
+            return new ResponseEntity<>(new Response(e.getMessage(), Date.from(Instant.now())), HttpStatus.NO_CONTENT);
         }
     }
 
@@ -192,7 +192,7 @@ public class userController {
             return new ResponseEntity<>(u, HttpStatus.OK);
         } catch (Exception e){
             log.error("Error getting user profile: {}", e.getMessage());
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.NO_CONTENT);
+            return new ResponseEntity<>(new Response(e.getMessage(), Date.from(Instant.now())), HttpStatus.NO_CONTENT);
         }
     }
 
@@ -210,7 +210,7 @@ public class userController {
             return new ResponseEntity<>(users, HttpStatus.OK);
         } catch (Exception e) {
             log.error("Error getting all users: {}", e.getMessage());
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.NO_CONTENT);
+            return new ResponseEntity<>(new Response(e.getMessage(), Date.from(Instant.now())), HttpStatus.NO_CONTENT);
         }
     }
 }

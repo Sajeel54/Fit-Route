@@ -1,5 +1,6 @@
 package com.fyp.fitRoute.security.Utilities;
 
+import com.fyp.fitRoute.security.Entity.User;
 import com.fyp.fitRoute.security.Services.MyUserDetailService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -8,6 +9,9 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -26,6 +30,8 @@ public class AuthFilter extends OncePerRequestFilter {
     @Autowired
     @Qualifier("handlerExceptionResolver")
     private HandlerExceptionResolver exceptionResolver;
+    @Autowired
+    private MongoTemplate mongoCon;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
@@ -40,7 +46,12 @@ public class AuthFilter extends OncePerRequestFilter {
             String username = jwtService.extractUsername(jwt);
             if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
                 UserDetails userDetails = myUserDetailService.loadUserByUsername(username);
+
                 if (userDetails != null) {
+                    User user = mongoCon.findOne(new Query(Criteria.where("username").is(username)), User.class);
+                    if (user.getSuspended()){
+                        throw new UserSuspendedException("User is suspended");
+                    }
                     UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
                             username,
                             userDetails.getPassword(),

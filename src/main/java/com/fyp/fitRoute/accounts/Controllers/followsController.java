@@ -4,6 +4,7 @@ import com.fyp.fitRoute.accounts.Entity.follows;
 import com.fyp.fitRoute.accounts.Entity.profileCard;
 import com.fyp.fitRoute.accounts.Services.followsService;
 import com.fyp.fitRoute.accounts.Services.userService;
+import com.fyp.fitRoute.inventory.Utilities.Response;
 import com.fyp.fitRoute.notifications.Services.notificationService;
 import com.fyp.fitRoute.security.Entity.User;
 import io.swagger.v3.oas.annotations.Operation;
@@ -16,6 +17,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.Instant;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -53,7 +56,7 @@ public class followsController {
             return new ResponseEntity<>(follow, HttpStatus.OK);
         } catch (Exception e) {
             log.error("Error following user: {}", e.getMessage());
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new Response(e.getMessage(), Date.from(Instant.now())), HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -73,7 +76,7 @@ public class followsController {
             return new ResponseEntity<>(checkDeletion, HttpStatus.OK);
         } catch (Exception e) {
             log.error("Error unfollowing user: {}", e.getMessage());
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new Response(e.getMessage(), Date.from(Instant.now())), HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -87,7 +90,7 @@ public class followsController {
 
         } catch (Exception e) {
             log.error("Error getting followers: {}", e.getMessage());
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.NO_CONTENT);
+            return new ResponseEntity<>(new Response(e.getMessage(), Date.from(Instant.now())), HttpStatus.NO_CONTENT);
         }
     }
 
@@ -105,7 +108,7 @@ public class followsController {
 
         } catch (Exception e) {
             log.error("Error getting followings: {}", e.getMessage());
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.NO_CONTENT);
+            return new ResponseEntity<>(new Response(e.getMessage(), Date.from(Instant.now())), HttpStatus.NO_CONTENT);
         }
     }
 }

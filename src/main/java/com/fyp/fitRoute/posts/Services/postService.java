@@ -11,6 +11,7 @@ import com.fyp.fitRoute.posts.Repositories.postRepo;
 import com.fyp.fitRoute.posts.Repositories.routeRepo;
 import com.fyp.fitRoute.posts.Utilities.postRequest;
 import com.fyp.fitRoute.posts.Utilities.postResponse;
+import com.fyp.fitRoute.progress.Entity.progress;
 import com.fyp.fitRoute.security.Entity.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
@@ -168,6 +169,19 @@ public class postService {
             throw new RuntimeException("User not found");
         user.setActivities(user.getActivities()+1);
         mongoTemplate.save(user);
+
+        //update progress of user
+        query = new Query(Criteria.where("userId").is(myId));
+        progress userProgress = mongoTemplate.findOne(query, progress.class);
+        if (userProgress == null) {
+            userProgress = new progress();
+            userProgress.setUserId(myId);
+        }
+        double[] dailyDistance = userProgress.getDailyDistance();
+        int dayOfWeek = Calendar.getInstance().get(Calendar.DAY_OF_WEEK) - 1;
+        dailyDistance[dayOfWeek] += body.getDistance();
+        userProgress.setDailyDistance(dailyDistance);
+        mongoTemplate.save(userProgress);
 
         newPost.setImages(imageUrls);
         return pRepo.save(newPost);

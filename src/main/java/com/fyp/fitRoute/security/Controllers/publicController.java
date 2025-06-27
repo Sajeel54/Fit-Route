@@ -1,6 +1,8 @@
 package com.fyp.fitRoute.security.Controllers;
 
 import com.fyp.fitRoute.accounts.Services.userService;
+import com.fyp.fitRoute.inventory.Utilities.Response;
+import com.fyp.fitRoute.progress.Entity.progress;
 import com.fyp.fitRoute.recommendations.Components.ANN.annModel;
 import com.fyp.fitRoute.security.Entity.User;
 import com.fyp.fitRoute.security.Services.MyUserDetailService;
@@ -11,6 +13,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -46,6 +49,8 @@ public class publicController {
     private googleAuthService oauthService;
     @Autowired
     private annModel model;
+    @Autowired
+    private MongoTemplate mongoCon;
 
     @GetMapping("/forgot-Password")
     @Operation( summary = "Send OTP to the user email" )
@@ -56,7 +61,7 @@ public class publicController {
             return new ResponseEntity<>(new emailObject(email), HttpStatus.OK);
         } catch (Exception ex) {
             log.error("Error occurred while sending OTP: {}", ex.getMessage());
-            return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new Response(ex.getMessage(), Date.from(Instant.now())), HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -78,7 +83,7 @@ public class publicController {
             return new ResponseEntity<>(response, HttpStatus.OK);
         } catch (Exception ex) {
             log.error("Error occurred while verifying OTP: {}", ex.getMessage());
-            return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new Response(ex.getMessage(), Date.from(Instant.now())), HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -90,7 +95,7 @@ public class publicController {
             return new ResponseEntity<>(response, HttpStatus.CREATED);
         } catch (Exception e){
             log.error("Error occurred while creating user: {}", e.getMessage());
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new Response(e.getMessage(), Date.from(Instant.now())), HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -112,14 +117,19 @@ public class publicController {
             user.setFollowings(0);
             user.setGoogleId(null);
             user.setEmail(request.getEmail());
+            user.setSuspended(false);
             model.modelClear();
             String url = model.saveModel(user.getId());
             user.setModelUrl(url);
             User createdUser = uService.addUser(user);
+            progress userProgress = new progress();
+            userProgress.setUserId(createdUser.getId());
+            userProgress.setDailyDistance(new double[7]);
+            mongoCon.save(userProgress, "progress");
             return new ResponseEntity<>(createdUser, HttpStatus.CREATED);
         } catch (Exception e){
             log.error("Error occurred while creating user: {}", e.getMessage());
-            return new ResponseEntity<>("User Already Exists", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new Response("User Already Exists", Date.from(Instant.now())), HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -142,7 +152,7 @@ public class publicController {
             }
         } catch (Exception e){
             log.error("Error occurred while authenticating user: {}", e.getMessage());
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.UNAUTHORIZED);
+            return new ResponseEntity<>(new Response(e.getMessage(), Date.from(Instant.now())), HttpStatus.UNAUTHORIZED);
         }
     }
 

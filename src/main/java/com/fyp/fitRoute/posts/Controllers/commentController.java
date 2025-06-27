@@ -1,10 +1,12 @@
 package com.fyp.fitRoute.posts.Controllers;
 
 import com.fyp.fitRoute.accounts.Services.userService;
+import com.fyp.fitRoute.inventory.Utilities.Response;
 import com.fyp.fitRoute.posts.Entity.comments;
 import com.fyp.fitRoute.posts.Services.commentService;
 import com.fyp.fitRoute.posts.Utilities.commentRequest;
 import com.fyp.fitRoute.security.Entity.User;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.constraints.NotNull;
 import lombok.extern.slf4j.Slf4j;
@@ -15,6 +17,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.Instant;
+import java.util.Date;
 import java.util.Objects;
 
 @RestController
@@ -28,27 +32,30 @@ public class commentController {
     private userService userService;
 
     @GetMapping
+    @Operation(summary = "Get comments by post ID")
     public ResponseEntity<?> getComments(@RequestParam String postId){
         try {
             return new ResponseEntity<>(commentService.getByPostId(postId), HttpStatus.OK);
         } catch (Exception e){
             log.error("Error getting comments: {}", e.getMessage());
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new Response(e.getMessage(), Date.from(Instant.now())), HttpStatus.BAD_REQUEST);
         }
     }
 
     @GetMapping("/replies")
+    @Operation(summary = "Get replies to a comment by reference ID")
     public ResponseEntity<?> getCommentReplies(@RequestParam String referenceId){
         try {
             return new ResponseEntity<>(commentService.getByCommentId(referenceId), HttpStatus.OK);
         } catch (Exception e){
             log.error("Error getting replies to comment: {}", e.getMessage());
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new Response(e.getMessage(), Date.from(Instant.now())), HttpStatus.BAD_REQUEST);
         }
     }
 
 
     @PostMapping
+    @Operation(summary = "Add a comment to a post")
     public ResponseEntity<?> addComment(@RequestBody commentRequest request){
         try {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -57,11 +64,12 @@ public class commentController {
             return new ResponseEntity<>(comment, HttpStatus.OK);
         } catch (Exception e){
             log.error("Error adding comment: {}", e.getMessage());
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new Response(e.getMessage(), Date.from(Instant.now())), HttpStatus.BAD_REQUEST);
         }
     }
 
     @DeleteMapping
+    @Operation(summary = "Delete a comment")
     public ResponseEntity<?> deleteComment(@NotNull comments comment){
         try {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -72,7 +80,7 @@ public class commentController {
             return new ResponseEntity<>(HttpStatus.OK);
         } catch (Exception e){
             log.error("Error deleting comment: {}", e.getMessage());
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new Response(e.getMessage(), Date.from(Instant.now())), HttpStatus.BAD_REQUEST);
         }
     }
 }

@@ -1,6 +1,7 @@
 package com.fyp.fitRoute.recommendations.Controllers;
 
 import com.fyp.fitRoute.accounts.Services.userService;
+import com.fyp.fitRoute.inventory.Utilities.Response;
 import com.fyp.fitRoute.posts.Utilities.postResponse;
 import com.fyp.fitRoute.recommendations.Services.recommendationService;
 import com.fyp.fitRoute.security.Entity.User;
@@ -16,6 +17,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.time.Instant;
+import java.util.Date;
 import java.util.List;
 
 @RestController
@@ -41,7 +44,7 @@ public class recommendationController {
                     posts, HttpStatus.OK);
         }catch (Exception ex){
             log.error("Error occurred while fetching recommendations: {}", ex.getMessage());
-            return new ResponseEntity<>(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(new Response(ex.getMessage(), Date.from(Instant.now())), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 }

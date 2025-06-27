@@ -1,6 +1,7 @@
 package com.fyp.fitRoute.posts.Controllers;
 
 import com.fyp.fitRoute.accounts.Services.userService;
+import com.fyp.fitRoute.inventory.Utilities.Response;
 import com.fyp.fitRoute.posts.Entity.likes;
 import com.fyp.fitRoute.posts.Services.likeService;
 import com.fyp.fitRoute.posts.Utilities.likeResponse;
@@ -15,6 +16,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.Instant;
+import java.util.Date;
 import java.util.List;
 
 @RestController
@@ -37,7 +40,7 @@ public class likeController {
                     HttpStatus.OK);
         } catch (Exception e) {
             log.error("Error getting likes: {}", e.getMessage());
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new Response(e.getMessage(), Date.from(Instant.now())), HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -51,7 +54,7 @@ public class likeController {
             return new ResponseEntity<>(like, HttpStatus.OK);
         } catch (Exception e) {
             log.error("Error checking like: {}", e.getMessage());
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new Response(e.getMessage(), Date.from(Instant.now())), HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -65,7 +68,7 @@ public class likeController {
             return new ResponseEntity<>(like, HttpStatus.OK);
         } catch (Exception e){
             log.error("Error adding like: {}", e.getMessage());
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new Response(e.getMessage(), Date.from(Instant.now())), HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -79,7 +82,7 @@ public class likeController {
             return new ResponseEntity<>(like, HttpStatus.OK);
         } catch (Exception e){
             log.error("Error adding like to comment: {}", e.getMessage());
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new Response(e.getMessage(), Date.from(Instant.now())), HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -93,7 +96,7 @@ public class likeController {
             return new ResponseEntity<>(HttpStatus.OK);
         } catch (Exception e){
             log.error("Error deleting like: {}", e.getMessage());
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new Response(e.getMessage(), Date.from(Instant.now())), HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -107,7 +110,7 @@ public class likeController {
             return new ResponseEntity<>(HttpStatus.OK);
         } catch (Exception e){
             log.error("Error deleting like from comment: {}", e.getMessage());
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new Response(e.getMessage(), Date.from(Instant.now())), HttpStatus.BAD_REQUEST);
         }
     }
 }

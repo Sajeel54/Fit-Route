@@ -1,6 +1,7 @@
 package com.fyp.fitRoute.posts.Controllers;
 
 import com.fyp.fitRoute.accounts.Services.userService;
+import com.fyp.fitRoute.inventory.Utilities.Response;
 import com.fyp.fitRoute.posts.Entity.posts;
 import com.fyp.fitRoute.posts.Services.postService;
 import com.fyp.fitRoute.posts.Utilities.postRequest;
@@ -16,6 +17,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.Instant;
+import java.util.Date;
 import java.util.List;
 
 
@@ -38,7 +41,7 @@ public class postController {
                     HttpStatus.OK);
         } catch (Exception e){
             log.error("Error getting posts: {}", e.getMessage());
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new Response(e.getMessage(), Date.from(Instant.now())), HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -54,7 +57,7 @@ public class postController {
             return new ResponseEntity<>(posts,HttpStatus.OK);
         } catch (Exception e){
             log.error("Error getting news feed: {}", e.getMessage());
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new Response(e.getMessage(), Date.from(Instant.now())), HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -70,7 +73,7 @@ public class postController {
                     HttpStatus.OK);
         } catch (Exception e){
             log.error("Error getting your posts: {}", e.getMessage());
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new Response(e.getMessage(), Date.from(Instant.now())), HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -88,7 +91,7 @@ public class postController {
             return new ResponseEntity<>(newPost, HttpStatus.OK);
         } catch (Exception e){
             log.error("Error adding post: {}", e.getMessage());
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new Response(e.getMessage(), Date.from(Instant.now())), HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -102,7 +105,7 @@ public class postController {
             return new ResponseEntity<>(HttpStatus.OK);
         } catch (Exception e){
             log.error("Error deleting post: {}", e.getMessage());
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new Response(e.getMessage(), Date.from(Instant.now())), HttpStatus.BAD_REQUEST);
         }
     }
 }

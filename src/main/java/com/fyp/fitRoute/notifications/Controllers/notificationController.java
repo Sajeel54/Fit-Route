@@ -1,5 +1,6 @@
 package com.fyp.fitRoute.notifications.Controllers;
 
+import com.fyp.fitRoute.inventory.Utilities.Response;
 import com.fyp.fitRoute.notifications.Entity.Notification;
 import com.fyp.fitRoute.notifications.Services.notificationService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -10,6 +11,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
+
+import java.time.Instant;
+import java.util.Date;
 
 @RestController
 @RequestMapping("/notification")
@@ -29,7 +33,7 @@ public class notificationController {
 
             return new ResponseEntity<>("Registered", HttpStatus.OK);
         }catch (Exception e){
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new Response(e.getMessage(), Date.from(Instant.now())), HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -43,7 +47,7 @@ public class notificationController {
 
             return new ResponseEntity<>("Registered", HttpStatus.OK);
         }catch (Exception e){
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new Response(e.getMessage(), Date.from(Instant.now())), HttpStatus.BAD_REQUEST);
         }
     }
 }
