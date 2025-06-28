@@ -74,7 +74,7 @@ public class commentController {
 
             notifiService.deliverNotification(
                     "Fit Route",
-                    myProfile.getUsername() + "Started following you",
+                    myProfile.getUsername() + " commented on your post",
                     postOwner.getUsername(),
                     myProfile.getUsername(),
                     ""

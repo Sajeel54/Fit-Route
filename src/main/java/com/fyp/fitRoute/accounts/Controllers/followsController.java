@@ -48,7 +48,7 @@ public class followsController {
 
             notificationService.deliverNotification(
                     "Fit Route",
-                    myProfile.getUsername() + "Started following you",
+                    myProfile.getUsername() + " started following you",
                     followed.get().getUsername(),
                     myProfile.getUsername(),
                     ""
