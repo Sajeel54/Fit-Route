@@ -8,6 +8,7 @@ import com.fyp.fitRoute.posts.Entity.posts;
 import com.fyp.fitRoute.posts.Services.commentService;
 import com.fyp.fitRoute.posts.Utilities.commentRequest;
 import com.fyp.fitRoute.security.Entity.User;
+import com.google.firebase.messaging.FirebaseMessagingException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.constraints.NotNull;
@@ -81,6 +82,9 @@ public class commentController {
             );
 
             return new ResponseEntity<>(comment, HttpStatus.OK);
+        } catch (FirebaseMessagingException e) {
+            log.error("Error sending notification: {}", e.getMessage());
+            return new ResponseEntity<>(new Response(e.getMessage(), Date.from(Instant.now())), HttpStatus.BAD_REQUEST);
         } catch (Exception e){
             log.error("Error adding comment: {}", e.getMessage());
             return new ResponseEntity<>(new Response(e.getMessage(), Date.from(Instant.now())), HttpStatus.BAD_REQUEST);
