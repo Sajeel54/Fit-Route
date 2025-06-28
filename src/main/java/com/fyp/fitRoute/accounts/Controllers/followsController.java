@@ -46,13 +46,13 @@ public class followsController {
                 throw new RuntimeException("user unable of being followed");
             follows follow =  flwService.addFollow(myProfile, followed.get());
 
-//            notificationService.deliverNotification(
-//                    "Fit Route",
-//                    myProfile.getUsername() + "Started following you",
-//                    followedData.getUsername(),
-//                    myProfile.getUsername(),
-//                    ""
-//            );
+            notificationService.deliverNotification(
+                    "Fit Route",
+                    myProfile.getUsername() + "Started following you",
+                    followed.get().getUsername(),
+                    myProfile.getUsername(),
+                    ""
+            );
             return new ResponseEntity<>(follow, HttpStatus.OK);
         } catch (Exception e) {
             log.error("Error following user: {}", e.getMessage());

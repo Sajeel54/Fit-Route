@@ -2,7 +2,9 @@ package com.fyp.fitRoute.posts.Controllers;
 
 import com.fyp.fitRoute.accounts.Services.userService;
 import com.fyp.fitRoute.inventory.Utilities.Response;
+import com.fyp.fitRoute.notifications.Services.notificationService;
 import com.fyp.fitRoute.posts.Entity.comments;
+import com.fyp.fitRoute.posts.Entity.posts;
 import com.fyp.fitRoute.posts.Services.commentService;
 import com.fyp.fitRoute.posts.Utilities.commentRequest;
 import com.fyp.fitRoute.security.Entity.User;
@@ -30,6 +32,8 @@ public class commentController {
     private commentService commentService;
     @Autowired
     private userService userService;
+    @Autowired
+    private notificationService notifiService;
 
     @GetMapping
     @Operation(summary = "Get comments by post ID")
@@ -61,6 +65,21 @@ public class commentController {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             User myProfile = userService.getProfile(authentication, "your profile not identified");
             comments comment = commentService.addComment(request, myProfile.getId());
+
+            //find the post owner
+
+            User postOwner = commentService.getPostOwner(request.getPostId());
+
+            // Notify the user who owns the post
+
+            notifiService.deliverNotification(
+                    "Fit Route",
+                    myProfile.getUsername() + "Started following you",
+                    postOwner.getUsername(),
+                    myProfile.getUsername(),
+                    ""
+            );
+
             return new ResponseEntity<>(comment, HttpStatus.OK);
         } catch (Exception e){
             log.error("Error adding comment: {}", e.getMessage());

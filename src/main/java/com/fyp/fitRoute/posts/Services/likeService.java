@@ -130,6 +130,21 @@ public class likeService {
             throw new RuntimeException("Unable to unlike post");
     }
 
+    //find owner of the post
+    public User getPostOwner(String postId) {
+        Optional<posts> post = postRepo.findById(postId);
+        if (post.isEmpty())
+            throw new RuntimeException("Post not found");
+
+        String ownerId = post.get().getAccountId();
+        Query query = new Query(Criteria.where("id").is(ownerId));
+        User user = mongoTemplate.findOne(query, User.class);
+        if (user == null)
+            throw new RuntimeException("Owner not found for post ID: " + postId);
+
+        return user;
+    }
+
     @Transactional
     public void deleteLike(String referenceId, String myId){
         Query query = new Query();

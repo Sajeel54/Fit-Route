@@ -83,4 +83,8 @@ public class notificationService {
             throw new RuntimeException("Register yourself");
         return userCon.get().getNotificationsTokens();
     }
+
+    public List<Notification> getNotifications(String username){
+        return notificationRepo.findByTo(username);
+    }
 }

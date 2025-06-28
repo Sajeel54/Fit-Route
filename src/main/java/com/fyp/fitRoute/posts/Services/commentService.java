@@ -33,6 +33,21 @@ public class commentService {
     @Autowired
     private MongoTemplate mongoTemplate;
 
+    //get post owner by postId
+    public User getPostOwner(String postId) {
+        Optional<posts> post = postRepo.findById(postId);
+        if (post.isEmpty()) {
+            throw new RuntimeException("Post not found with ID: " + postId);
+        }
+        String ownerId = post.get().getAccountId();
+        Query query = new Query(Criteria.where("id").is(ownerId));
+        User owner = mongoTemplate.findOne(query, User.class);
+        if (owner == null) {
+            throw new RuntimeException("Owner not found for post ID: " + postId);
+        }
+        return owner;
+    }
+
     public boolean checkLike(String referenceId, String myId){
         Query query = new Query();
         query.addCriteria(Criteria.where("referenceId").is(referenceId));

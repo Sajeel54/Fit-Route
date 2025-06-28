@@ -2,6 +2,7 @@ package com.fyp.fitRoute.posts.Controllers;
 
 import com.fyp.fitRoute.accounts.Services.userService;
 import com.fyp.fitRoute.inventory.Utilities.Response;
+import com.fyp.fitRoute.notifications.Services.notificationService;
 import com.fyp.fitRoute.posts.Entity.likes;
 import com.fyp.fitRoute.posts.Services.likeService;
 import com.fyp.fitRoute.posts.Utilities.likeResponse;
@@ -29,6 +30,8 @@ public class likeController {
     private likeService likeService;
     @Autowired
     private userService userService;
+    @Autowired
+    private notificationService notifiService;
 
     @GetMapping
     @Operation(summary = "Get likes by postId")
@@ -65,6 +68,19 @@ public class likeController {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             User myProfile = userService.getProfile(authentication, "your profile not identified");
             likes like = likeService.addLike(postId, myProfile.getId());
+
+            //find the post owner
+            User postOwner = likeService.getPostOwner(postId);
+
+            // Notify the post owner
+            notifiService.deliverNotification(
+                    "Fit Route",
+                    myProfile.getUsername() + " liked your post",
+                    postOwner.getUsername(),
+                    myProfile.getUsername(),
+                    ""
+            );
+
             return new ResponseEntity<>(like, HttpStatus.OK);
         } catch (Exception e){
             log.error("Error adding like: {}", e.getMessage());
