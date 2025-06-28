@@ -52,13 +52,23 @@ public class notificationService {
     }
 
     public void registerToken(String username, @NonNull String token){
-        userConfig userCon = new userConfig();
+        userConfig userCon = userConRepo.findByUsername(username)
+                .orElseGet(() -> {
+                    userConfig newUserCon = new userConfig();
+                    newUserCon.setUsername(username);
+                    newUserCon.setNotificationsTokens(List.of(token));
+                    newUserCon.setSuspended(false);
+                    newUserCon.setSuspensionEndDate(null);
+                    return newUserCon;
+                });
         List<String> tokens= userCon.getNotificationsTokens();
         if (tokens.contains(token))
             return;
         tokens.add(token);
         userCon.setNotificationsTokens(tokens);
         userCon.setUsername(username);
+        userCon.setSuspended(userCon.isSuspended());
+        userCon.setSuspensionEndDate(userCon.getSuspensionEndDate());
         userConRepo.save(userCon);
     }
 
@@ -74,6 +84,8 @@ public class notificationService {
         tokens.add(newToken);
         userCon.setNotificationsTokens(tokens);
         userCon.setUsername(username);
+        userCon.setSuspended(userCon.isSuspended());
+        userCon.setSuspensionEndDate(userCon.getSuspensionEndDate());
         userConRepo.save(userCon);
     }
 

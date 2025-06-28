@@ -5,6 +5,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.util.Date;
 import java.util.List;
 
 @Document( collection = "userConfig" )
@@ -15,4 +16,6 @@ public class userConfig {
     @Indexed(unique = true)
     private String username;
     private List<String> notificationsTokens;
+    private boolean suspended;
+    private Date suspensionEndDate;
 }
