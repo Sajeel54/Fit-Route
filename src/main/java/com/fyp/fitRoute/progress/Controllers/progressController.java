@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.time.Instant;
 import java.util.Date;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/progress")
@@ -34,6 +35,21 @@ public class progressController {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             User myProfile = uService.getProfile(authentication, "Your Profile not identified");
             return ResponseEntity.ok(trackerService.getProgressByUserId(myProfile.getId()));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(new Response("Error fetching progress: " + e.getMessage(), Date.from(Instant.now())));
+        }
+    }
+
+    // check other user's progress
+    @GetMapping("/user")
+    @Operation(summary = "Get weekly progress by user ID")
+    public ResponseEntity<?> getProgressByUserId(@RequestParam String username) {
+        try {
+            Optional<User> user = uService.getUserByName(username);
+            if (user.isEmpty()) {
+                throw new RuntimeException("User not found with username: " + username);
+            }
+            return ResponseEntity.ok(trackerService.getProgressByUserId(user.get().getId()));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(new Response("Error fetching progress: " + e.getMessage(), Date.from(Instant.now())));
         }

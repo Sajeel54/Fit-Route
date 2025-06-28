@@ -202,6 +202,12 @@ public class postService {
         Query query = new Query(Criteria.where("postId").is(post.getId()));
         mongoTemplate.findAllAndRemove(query, likes.class);
         mongoTemplate.findAllAndRemove(query, comments.class);
+        User user = mongoTemplate.findOne(new Query(Criteria.where("id").is(publisherId)), User.class);
+        if (user == null)
+            throw new RuntimeException("User not found");
+
+        user.setActivities(user.getActivities()-1);
+        mongoTemplate.save(user);
 
         rRepo.deleteById(post.getRouteId());
         Optional<route> foundRoute = rRepo.findById(post.getRouteId());
