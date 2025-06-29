@@ -22,7 +22,6 @@ public class firebaseConfig {
 
     @Bean
     public FirebaseApp initializeFirebase() throws IOException {
-
         ByteArrayInputStream credentialStream = new ByteArrayInputStream(firebase_credentials.getBytes(StandardCharsets.UTF_8));
 
         FirebaseOptions options = FirebaseOptions.builder()
