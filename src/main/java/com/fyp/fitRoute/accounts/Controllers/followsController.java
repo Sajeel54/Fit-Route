@@ -52,7 +52,7 @@ public class followsController {
                     myProfile.getUsername() + " started following you",
                     followed.get().getUsername(),
                     myProfile.getUsername(),
-                    ""
+                    followed.get().getId()
             );
             return new ResponseEntity<>(follow, HttpStatus.OK);
         }catch (FirebaseMessagingException e) {
