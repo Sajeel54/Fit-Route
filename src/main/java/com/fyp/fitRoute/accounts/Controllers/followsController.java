@@ -7,6 +7,7 @@ import com.fyp.fitRoute.accounts.Services.userService;
 import com.fyp.fitRoute.inventory.Utilities.Response;
 import com.fyp.fitRoute.notifications.Services.notificationService;
 import com.fyp.fitRoute.security.Entity.User;
+import com.google.firebase.messaging.FirebaseMessagingException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
@@ -54,6 +55,9 @@ public class followsController {
                     ""
             );
             return new ResponseEntity<>(follow, HttpStatus.OK);
+        }catch (FirebaseMessagingException e) {
+            log.error("Error sending notification: {}", e.getMessage());
+            return new ResponseEntity<>(new Response(e.getMessage(), Date.from(Instant.now())), HttpStatus.BAD_REQUEST);
         } catch (Exception e) {
             log.error("Error following user: {}", e.getMessage());
             return new ResponseEntity<>(new Response(e.getMessage(), Date.from(Instant.now())), HttpStatus.BAD_REQUEST);

@@ -10,6 +10,7 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -56,7 +57,7 @@ public class notificationService {
                 .orElseGet(() -> {
                     userConfig newUserCon = new userConfig();
                     newUserCon.setUsername(username);
-                    newUserCon.setNotificationsTokens(List.of(token));
+                    newUserCon.setNotificationsTokens(new ArrayList<>());
                     newUserCon.setSuspended(false);
                     newUserCon.setSuspensionEndDate(null);
                     return newUserCon;
