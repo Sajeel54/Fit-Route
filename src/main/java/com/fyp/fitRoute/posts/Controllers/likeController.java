@@ -79,7 +79,7 @@ public class likeController {
                     myProfile.getUsername() + " liked your post",
                     postOwner.getUsername(),
                     myProfile.getUsername(),
-                    ""
+                    postId
             );
 
             return new ResponseEntity<>(like, HttpStatus.OK);

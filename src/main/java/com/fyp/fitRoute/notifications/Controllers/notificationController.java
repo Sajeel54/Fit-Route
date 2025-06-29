@@ -51,6 +51,20 @@ public class notificationController {
         }
     }
 
+    @DeleteMapping("/unregister-token")
+    @Operation( summary = "Unregister your fcm token for notifications service" )
+    public ResponseEntity<?> unregisterToken(@RequestParam String token){
+        try {
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+            notificationService.deleteToken(authentication.getName(), token);
+
+            return new ResponseEntity<>("Unregistered", HttpStatus.OK);
+        }catch (Exception e){
+            return new ResponseEntity<>(new Response(e.getMessage(), Date.from(Instant.now())), HttpStatus.BAD_REQUEST);
+        }
+    }
+
     @GetMapping("/get-notifications")
     @Operation( summary = "Get notifications for the user" )
     public ResponseEntity<?> getNotifications(@RequestParam String username){

@@ -1,4 +1,4 @@
-package com.fyp.fitRoute.notifications.Entity;
+package com.fyp.fitRoute.notifications.Utilities;
 
 import lombok.Data;
 import org.springframework.data.annotation.Id;
@@ -8,14 +8,14 @@ import java.util.Date;
 
 @Document( collection = "notifications" )
 @Data
-public class Notification {
+public class notificationResponse {
     @Id
     private String id;
     private String from;
+    private String senderImage;
     private String to;
     private String title;
     private String body;
     private String reference;
     private Date createdAt;
-
 }

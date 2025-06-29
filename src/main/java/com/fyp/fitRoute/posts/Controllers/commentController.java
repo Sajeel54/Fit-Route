@@ -78,7 +78,7 @@ public class commentController {
                     myProfile.getUsername() + " commented on your post",
                     postOwner.getUsername(),
                     myProfile.getUsername(),
-                    ""
+                    request.getPostId()
             );
 
             return new ResponseEntity<>(comment, HttpStatus.OK);
