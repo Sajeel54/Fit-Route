@@ -216,7 +216,7 @@ public class userController {
         }
     }
 
-    @GetMapping("total-users")
+    @GetMapping("/total-users")
     @Operation( summary = "Get total number of users" )
     public ResponseEntity<?> getTotalUsers() {
         try {
