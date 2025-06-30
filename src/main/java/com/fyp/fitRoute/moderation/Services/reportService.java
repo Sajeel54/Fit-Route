@@ -31,7 +31,7 @@ public class reportService {
         userConfig userConfig = userConfigRepository.findById(reportedUserId).orElse(null);
 
         if (userConfig == null) {
-            throw new IllegalArgumentException("User with ID " + reportedUserId + " does not exist.");
+            throw new IllegalArgumentException("User with ID " + reportedUserId + " is not registered");
         }
 
         reports report = new reports();
