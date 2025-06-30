@@ -25,11 +25,11 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
+@CrossOrigin("*")
 @RestController
 @RequestMapping("/Profile")
 @Tag( name = "User Controller" , description = "Endpoints for profile managements")
 @Slf4j
-//@CrossOrigin(origins = "*", allowedHeaders = "*")
 public class userController {
     @Autowired
     private userService uService;

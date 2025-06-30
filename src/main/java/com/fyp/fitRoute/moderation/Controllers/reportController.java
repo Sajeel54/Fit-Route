@@ -19,11 +19,11 @@ import org.springframework.web.bind.annotation.*;
 import java.time.Instant;
 import java.util.Date;
 
+@CrossOrigin("*")
 @RestController
 @RequestMapping("/report")
 @Tag(name = "Report Controller")
 @Slf4j
-//@CrossOrigin(origins = "*", allowedHeaders = "*")
 public class reportController {
     @Autowired
     private reportService reportService;
