@@ -29,15 +29,17 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
-        httpSecurity.csrf(AbstractHttpConfigurer::disable);
-        httpSecurity.authorizeHttpRequests(request -> {
-            request.requestMatchers("/public/**", "/", "/swagger-ui/**", "/v3/api-docs/**").permitAll();
-            request.requestMatchers("/admin/**").hasRole("ADMIN");
-            request.requestMatchers("/user/**").hasRole("USER");
-            request.anyRequest().authenticated();
-        });
-        httpSecurity.httpBasic(Customizer.withDefaults());
-        httpSecurity.addFilterBefore(authFilter, UsernamePasswordAuthenticationFilter.class);
+        httpSecurity
+                .cors(Customizer.withDefaults())
+                .csrf(AbstractHttpConfigurer::disable)
+                .authorizeHttpRequests(request -> {
+                    request.requestMatchers("/public/**", "/", "/swagger-ui/**", "/v3/api-docs/**").permitAll();
+                    request.requestMatchers("/admin/**").hasRole("ADMIN");
+                    request.requestMatchers("/user/**").hasRole("USER");
+                    request.anyRequest().authenticated();
+                })
+                .httpBasic(Customizer.withDefaults())
+                .addFilterBefore(authFilter, UsernamePasswordAuthenticationFilter.class);
         return httpSecurity.build();
     }
 
