@@ -67,16 +67,12 @@ public class notificationController {
 
     @GetMapping("/get-notifications")
     @Operation( summary = "Get notifications for the user" )
-    public ResponseEntity<?> getNotifications(@RequestParam String username){
+    public ResponseEntity<?> getNotifications(){
         try {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             String myUsername = authentication.getName();
 
-            if (!myUsername.equals(username)) {
-                return new ResponseEntity<>(new Response("Unauthorized access", Date.from(Instant.now())), HttpStatus.UNAUTHORIZED);
-            }
-
-            return new ResponseEntity<>(notificationService.getNotifications(username), HttpStatus.OK);
+            return new ResponseEntity<>(notificationService.getNotifications(myUsername), HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(new Response(e.getMessage(), Date.from(Instant.now())), HttpStatus.BAD_REQUEST);
         }

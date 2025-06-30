@@ -96,11 +96,6 @@ public class reportService {
         return new ArrayList<>(reportCards.values());
     }
 
-    // get reports by user id
-    public List<reports> getReportsByUserId(String reportedUserId) {
-        return reportRepository.findByReportedUserId(reportedUserId);
-    }
-
     @Scheduled(fixedRate = 86400000) // Runs every 24 hours
     public void unsuspendAccounts() {
         List<userConfig> suspendedUsers = userConfigRepository.findAllBySuspended(true);

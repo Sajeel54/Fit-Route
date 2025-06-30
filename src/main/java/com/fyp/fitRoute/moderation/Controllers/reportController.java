@@ -38,6 +38,12 @@ public class reportController {
 
            String reportedUserId = userServic.getUserByName(request.getReportedUsername()).get().getId();
 
+           // Check if both are same
+              if (reporterId.equals(reportedUserId)) {
+                return new ResponseEntity<>(new Response("You cannot report yourself", Date.from(Instant.now())), HttpStatus.BAD_REQUEST);
+              }
+
+
            reportService.saveReport(request.getReason(), reportedUserId ,reporterId);
 
            return new ResponseEntity<>(new Response("Report added successfully", Date.from(Instant.now())), HttpStatus.OK);
@@ -69,7 +75,7 @@ public class reportController {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             String reporterId = userServic.getProfile(authentication, "Profile not found").getId();
 
-            return new ResponseEntity<>(reportService.getReportsByUserId(reporterId), HttpStatus.OK);
+            return new ResponseEntity<>(reportService.getAllReportsOfUser(reporterId), HttpStatus.OK);
         } catch (Exception e) {
             log.error("Error fetching reports by username: {}", e.getMessage());
             return new ResponseEntity<>(new Response(e.getMessage(), Date.from(Instant.now())), HttpStatus.BAD_REQUEST);
