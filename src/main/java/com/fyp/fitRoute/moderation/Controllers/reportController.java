@@ -23,7 +23,7 @@ import java.util.Date;
 @RequestMapping("/report")
 @Tag(name = "Report Controller")
 @Slf4j
-@CrossOrigin(origins = "*", allowedHeaders = "*")
+//@CrossOrigin(origins = "*", allowedHeaders = "*")
 public class reportController {
     @Autowired
     private reportService reportService;
