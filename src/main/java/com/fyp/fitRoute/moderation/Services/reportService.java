@@ -12,10 +12,12 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Service;
 
 import java.time.Instant;
 import java.util.*;
 
+@Service
 public class reportService {
     @Autowired
     private reportRepo reportRepository;
