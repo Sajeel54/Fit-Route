@@ -49,7 +49,7 @@ public class AuthFilter extends OncePerRequestFilter {
 
                 if (userDetails != null) {
                     userConfig user = mongoCon.findOne(new Query(Criteria.where("username").is(username)), userConfig.class);
-                    if (user.isSuspended()){
+                    if (user!=null && user.isSuspended()){
                         throw new UserSuspendedException("User is suspended");
                     }
                     UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
