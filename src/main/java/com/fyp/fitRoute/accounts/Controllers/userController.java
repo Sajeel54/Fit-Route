@@ -7,6 +7,7 @@ import com.fyp.fitRoute.accounts.Utilities.profileRequest;
 import com.fyp.fitRoute.accounts.Services.followsService;
 import com.fyp.fitRoute.accounts.Services.userService;
 import com.fyp.fitRoute.inventory.Utilities.Response;
+import com.fyp.fitRoute.inventory.Utilities.numericResponse;
 import com.fyp.fitRoute.security.Entity.User;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -213,4 +214,16 @@ public class userController {
             return new ResponseEntity<>(new Response(e.getMessage(), Date.from(Instant.now())), HttpStatus.NO_CONTENT);
         }
     }
+
+    @GetMapping("total-users")
+    @Operation( summary = "Get total number of users" )
+    public ResponseEntity<?> getTotalUsers() {
+        try {
+            return new ResponseEntity<>(new numericResponse((int)uService.getTotalUsers()), HttpStatus.OK);
+        } catch (Exception e) {
+            log.error("Error getting total users: {}", e.getMessage());
+            return new ResponseEntity<>(new Response(e.getMessage(), Date.from(Instant.now())), HttpStatus.NO_CONTENT);
+        }
+    }
+
 }

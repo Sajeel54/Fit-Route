@@ -103,6 +103,11 @@ public class reportService {
         return new ArrayList<>(reportCards.values());
     }
 
+    // get number of unsuspended accounts
+    public int getNumberOfUnsuspendedAccounts() {
+        return userConfigRepository.findAllBySuspended(false).size();
+    }
+
     @Scheduled(fixedRate = 86400000) // Runs every 24 hours
     public void unsuspendAccounts() {
         List<userConfig> suspendedUsers = userConfigRepository.findAllBySuspended(true);
@@ -118,5 +123,9 @@ public class reportService {
                 deleteReportByUserId(id);
             }
         });
+    }
+
+    public int getNumberOfReports() {
+        return (int) reportRepository.count();
     }
 }

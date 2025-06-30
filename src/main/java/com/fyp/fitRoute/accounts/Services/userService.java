@@ -213,4 +213,9 @@ public class userService {
     public List<profileCard> getProfileOfAll() {
         return mongoTemplate.findAll(profileCard.class);
     }
+
+    // total number of users
+    public long getTotalUsers() {
+        return (int) userRepo.count();
+    }
 }

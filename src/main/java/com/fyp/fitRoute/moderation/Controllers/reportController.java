@@ -2,6 +2,7 @@ package com.fyp.fitRoute.moderation.Controllers;
 
 import com.fyp.fitRoute.accounts.Services.userService;
 import com.fyp.fitRoute.inventory.Utilities.Response;
+import com.fyp.fitRoute.inventory.Utilities.numericResponse;
 import com.fyp.fitRoute.moderation.Services.reportService;
 import com.fyp.fitRoute.moderation.Utilities.reportRequest;
 import io.swagger.v3.oas.annotations.Operation;
@@ -79,6 +80,30 @@ public class reportController {
             return new ResponseEntity<>(reportService.getAllReportsOfUser(reporterId), HttpStatus.OK);
         } catch (Exception e) {
             log.error("Error fetching reports by username: {}", e.getMessage());
+            return new ResponseEntity<>(new Response(e.getMessage(), Date.from(Instant.now())), HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @GetMapping("/total-reports")
+    @Operation(summary = "Get number of reports")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<?> getNumberOfReports() {
+        try {
+            return new ResponseEntity<>(new numericResponse(reportService.getNumberOfReports()), HttpStatus.OK);
+        } catch (Exception e) {
+            log.error("Error fetching number of reports: {}", e.getMessage());
+            return new ResponseEntity<>(new Response(e.getMessage(), Date.from(Instant.now())), HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @GetMapping("/unsuspend")
+    @Operation(summary = "Unsuspend accounts")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<?> unsuspendedNumberOfAccounts() {
+        try {
+            return new ResponseEntity<>(new numericResponse(reportService.getNumberOfUnsuspendedAccounts()), HttpStatus.OK);
+        } catch (Exception e) {
+            log.error("Error unsuspending accounts: {}", e.getMessage());
             return new ResponseEntity<>(new Response(e.getMessage(), Date.from(Instant.now())), HttpStatus.BAD_REQUEST);
         }
     }
