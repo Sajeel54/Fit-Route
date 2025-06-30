@@ -29,6 +29,7 @@ import java.util.Optional;
 @RequestMapping("/Profile")
 @Tag( name = "User Controller" , description = "Endpoints for profile managements")
 @Slf4j
+@CrossOrigin(origins = "*", allowedHeaders = "*")
 public class userController {
     @Autowired
     private userService uService;
