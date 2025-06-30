@@ -131,6 +131,7 @@ public class publicController {
             userConfig.setNotificationsTokens(new ArrayList<>());
             userConfig.setSuspended(false);
             userConfig.setSuspensionEndDate(null);
+            mongoCon.save(userConfig, "userConfig");
             mongoCon.save(userProgress, "progress");
             return new ResponseEntity<>(createdUser, HttpStatus.CREATED);
         } catch (Exception e){

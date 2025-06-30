@@ -50,6 +50,10 @@ public class notificationService {
         notification.setReference(ref);
         List<String> tokens = getTokenByUsername(notification.getTo());
         String response = "";
+        if (tokens.isEmpty()) {
+            log.warn("No tokens found for user: {}", to);
+            return "No tokens found for user";
+        }
         try {
             for (String token : tokens) {
                 response = frbService.sendNotification(title, body, token);

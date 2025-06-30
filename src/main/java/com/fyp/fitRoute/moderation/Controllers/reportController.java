@@ -44,7 +44,7 @@ public class reportController {
               }
 
 
-           reportService.saveReport(request.getReason(), reportedUserId ,reporterId);
+           reportService.saveReport(request.getReason(), reportedUserId ,reporterId, request.getReportedUsername());
 
            return new ResponseEntity<>(new Response("Report added successfully", Date.from(Instant.now())), HttpStatus.OK);
 

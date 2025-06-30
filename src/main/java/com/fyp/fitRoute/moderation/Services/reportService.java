@@ -26,7 +26,7 @@ public class reportService {
     @Autowired
     private userConfigRepo userConfigRepository;
 
-    public void saveReport(String reason, String reportedUserId , String reporterId) {
+    public void saveReport(String reason, String reportedUserId , String reporterId, String reportedUsername) {
 
         userConfig userCon = userConfigRepository.findById(reportedUserId).orElse(null);
 
@@ -34,7 +34,8 @@ public class reportService {
             // If userConfig does not exist, create a new one
             userCon= new userConfig();
             userCon.setNotificationsTokens(new ArrayList<>());
-            userCon.setUsername(reportedUserId);
+
+            userCon.setUsername(reportedUsername);
             userCon.setSuspended(false);
             userCon.setSuspensionEndDate(null);
             userConfigRepository.save(userCon);
