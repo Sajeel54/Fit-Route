@@ -2,6 +2,7 @@ package com.fyp.fitRoute.security.Controllers;
 
 import com.fyp.fitRoute.accounts.Services.userService;
 import com.fyp.fitRoute.inventory.Utilities.Response;
+import com.fyp.fitRoute.notifications.Entity.userConfig;
 import com.fyp.fitRoute.progress.Entity.progress;
 import com.fyp.fitRoute.recommendations.Components.ANN.annModel;
 import com.fyp.fitRoute.security.Entity.User;
@@ -25,6 +26,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.Date;
 
 @RestController
@@ -124,6 +126,11 @@ public class publicController {
             progress userProgress = new progress();
             userProgress.setUserId(createdUser.getId());
             userProgress.setDailyDistance(new double[7]);
+            userConfig userConfig = new userConfig();
+            userConfig.setUsername(createdUser.getUsername());
+            userConfig.setNotificationsTokens(new ArrayList<>());
+            userConfig.setSuspended(false);
+            userConfig.setSuspensionEndDate(null);
             mongoCon.save(userProgress, "progress");
             return new ResponseEntity<>(createdUser, HttpStatus.CREATED);
         } catch (Exception e){

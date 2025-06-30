@@ -28,10 +28,16 @@ public class reportService {
 
     public void saveReport(String reason, String reportedUserId , String reporterId) {
 
-        userConfig userConfig = userConfigRepository.findById(reportedUserId).orElse(null);
+        userConfig userCon = userConfigRepository.findById(reportedUserId).orElse(null);
 
-        if (userConfig == null) {
-            throw new IllegalArgumentException("User with ID " + reportedUserId + " is not registered");
+        if (userCon == null) {
+            // If userConfig does not exist, create a new one
+            userCon= new userConfig();
+            userCon.setNotificationsTokens(new ArrayList<>());
+            userCon.setUsername(reportedUserId);
+            userCon.setSuspended(false);
+            userCon.setSuspensionEndDate(null);
+            userConfigRepository.save(userCon);
         }
 
         reports report = new reports();
@@ -40,11 +46,11 @@ public class reportService {
         report.setReason(reason);
         reportRepository.save(report);
 
-        if (reportRepository.findByReportedUserId(reportedUserId).size() > 10 && !userConfig.isSuspended()) {
+        if (reportRepository.findByReportedUserId(reportedUserId).size() > 10 && !userCon.isSuspended()) {
             // Suspend the user if they have more than 10 reports
-            userConfig.setSuspended(true);
-            userConfig.setSuspensionEndDate(Date.from(Instant.now().plusSeconds(86400*7L))); // Suspend for 7 days
-            userConfigRepository.save(userConfig);
+            userCon.setSuspended(true);
+            userCon.setSuspensionEndDate(Date.from(Instant.now().plusSeconds(86400*7L))); // Suspend for 7 days
+            userConfigRepository.save(userCon);
         }
     }
 
