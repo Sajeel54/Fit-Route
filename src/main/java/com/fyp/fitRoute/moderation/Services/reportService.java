@@ -2,10 +2,10 @@ package com.fyp.fitRoute.moderation.Services;
 
 import com.fyp.fitRoute.moderation.Entity.reports;
 import com.fyp.fitRoute.moderation.Repositories.reportRepo;
-import com.fyp.fitRoute.moderation.Repositories.userConfigRepo;
 import com.fyp.fitRoute.moderation.Utilities.reportCard;
 import com.fyp.fitRoute.moderation.Utilities.reportResponse;
 import com.fyp.fitRoute.notifications.Entity.userConfig;
+import com.fyp.fitRoute.notifications.Repositories.userConfigRepo;
 import com.fyp.fitRoute.security.Entity.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
