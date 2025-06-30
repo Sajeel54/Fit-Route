@@ -8,6 +8,7 @@ import com.fyp.fitRoute.notifications.Repositories.userConfigRepo;
 import com.fyp.fitRoute.notifications.Utilities.notificationResponse;
 import com.fyp.fitRoute.security.Entity.User;
 import com.google.firebase.messaging.FirebaseMessagingException;
+import lombok.extern.slf4j.Slf4j;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -15,9 +16,11 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
+@Slf4j
 public class notificationService {
     @Autowired
     private notificationRepo notificationRepo;
@@ -36,6 +39,9 @@ public class notificationService {
             String ref
     ) throws FirebaseMessagingException {
 
+        if (Objects.equals(to, from))
+            return "Cannot send notification to yourself";
+
         Notification notification = new Notification();
         notification.setTo(to);
         notification.setFrom(from);
@@ -48,6 +54,7 @@ public class notificationService {
             for (String token : tokens) {
                 response = frbService.sendNotification(title, body, token);
             }
+            log.info("Notification sent to: {}", to);
             notificationRepo.save(notification);
         } catch (Exception ex) {
             response = "Not successful";

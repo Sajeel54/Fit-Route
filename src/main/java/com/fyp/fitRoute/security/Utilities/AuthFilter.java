@@ -1,6 +1,6 @@
 package com.fyp.fitRoute.security.Utilities;
 
-import com.fyp.fitRoute.security.Entity.User;
+import com.fyp.fitRoute.notifications.Entity.userConfig;
 import com.fyp.fitRoute.security.Services.MyUserDetailService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -48,8 +48,8 @@ public class AuthFilter extends OncePerRequestFilter {
                 UserDetails userDetails = myUserDetailService.loadUserByUsername(username);
 
                 if (userDetails != null) {
-                    User user = mongoCon.findOne(new Query(Criteria.where("username").is(username)), User.class);
-                    if (user.getSuspended()){
+                    userConfig user = mongoCon.findOne(new Query(Criteria.where("username").is(username)), userConfig.class);
+                    if (user.isSuspended()){
                         throw new UserSuspendedException("User is suspended");
                     }
                     UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(

@@ -117,7 +117,6 @@ public class publicController {
             user.setFollowings(0);
             user.setGoogleId(null);
             user.setEmail(request.getEmail());
-            user.setSuspended(false);
             model.modelClear();
             String url = model.saveModel(user.getId());
             user.setModelUrl(url);

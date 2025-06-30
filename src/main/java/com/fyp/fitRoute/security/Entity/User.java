@@ -38,5 +38,4 @@ public class User {
     private Date createdAt;
     private Date updatedAt;
     private String modelUrl;
-    private Boolean suspended;
 }

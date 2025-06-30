@@ -31,7 +31,7 @@ public class notificationController {
 
             notificationService.registerToken(authentication.getName(), token);
 
-            return new ResponseEntity<>("Registered", HttpStatus.OK);
+            return new ResponseEntity<>(new Response("Registered", Date.from(Instant.now())), HttpStatus.OK);
         }catch (Exception e){
             return new ResponseEntity<>(new Response(e.getMessage(), Date.from(Instant.now())), HttpStatus.BAD_REQUEST);
         }
@@ -45,7 +45,7 @@ public class notificationController {
 
             notificationService.registerToken(authentication.getName(), newToken);
 
-            return new ResponseEntity<>("Registered", HttpStatus.OK);
+            return new ResponseEntity<>(new Response("Registered", Date.from(Instant.now())), HttpStatus.OK);
         }catch (Exception e){
             return new ResponseEntity<>(new Response(e.getMessage(), Date.from(Instant.now())), HttpStatus.BAD_REQUEST);
         }
@@ -59,7 +59,7 @@ public class notificationController {
 
             notificationService.deleteToken(authentication.getName(), token);
 
-            return new ResponseEntity<>("Unregistered", HttpStatus.OK);
+            return new ResponseEntity<>(new Response("Unregistered", Date.from(Instant.now())), HttpStatus.OK);
         }catch (Exception e){
             return new ResponseEntity<>(new Response(e.getMessage(), Date.from(Instant.now())), HttpStatus.BAD_REQUEST);
         }
