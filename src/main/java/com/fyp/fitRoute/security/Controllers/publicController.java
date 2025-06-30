@@ -33,6 +33,7 @@ import java.util.Date;
 @RequestMapping("/public")
 @Tag( name="Public Controller" , description = "These endpoints are public and require no Authentication")
 @Slf4j
+@CrossOrigin(origins = "*", allowedHeaders = "*")
 public class publicController {
 
     @Autowired
