@@ -94,7 +94,7 @@ public class googleAuthService {
         String jwt = jwtUtil.generateToken(
                 loadUserByUsername(user.getUsername())
         );
-        return new loginResponse(jwt);
+        return new loginResponse(jwt, jwtUtil.getRole(jwt));
     }
 
     private String[] getRoles(User user) {
