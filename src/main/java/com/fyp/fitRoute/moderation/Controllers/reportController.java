@@ -71,12 +71,11 @@ public class reportController {
     @GetMapping("/user")
     @Operation(summary = "Get reports by username")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<?> getReportsByUsername(String username) {
+    public ResponseEntity<?> getReportsByUsername(@RequestParam String username) {
         try {
-            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-            String reporterId = userServic.getProfile(authentication, "Profile not found").getId();
-
-            return new ResponseEntity<>(reportService.getAllReportsOfUser(reporterId), HttpStatus.OK);
+            String reportedId = userServic.getUserByName(username)
+                    .orElseThrow(() -> new RuntimeException("User not found")).getId();
+            return new ResponseEntity<>(reportService.getAllReportsOfUser(reportedId), HttpStatus.OK);
         } catch (Exception e) {
             log.error("Error fetching reports by username: {}", e.getMessage());
             return new ResponseEntity<>(new Response(e.getMessage(), Date.from(Instant.now())), HttpStatus.BAD_REQUEST);
