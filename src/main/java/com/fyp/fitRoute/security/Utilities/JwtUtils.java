@@ -10,10 +10,8 @@ import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
 import java.time.Instant;
-import java.util.Base64;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Component
 @NoArgsConstructor
@@ -21,16 +19,20 @@ public class JwtUtils {
     @Value("${jwt.secret}")
     private String SECRET;
 
-    public String generateToken(UserDetails userDetails) {
+    public loginResponse generateToken(UserDetails userDetails) {
         Map<String, String> claims = new HashMap<>();
         // sets issuer you can set other related info by setting claims like this
         claims.put("iss", "Fit Route Security");
-        return Jwts.builder()
+        List<String> roles = userDetails.getAuthorities().stream()
+                .map(authority -> authority.getAuthority())
+                .collect(Collectors.toList());
+        String role = roles.contains("ROLE_ADMIN") ? "ADMIN": "USER"; // Default to USER if no roles
+        return new loginResponse(Jwts.builder()
                 .claims(claims)
                 .subject(userDetails.getUsername())
                 .issuedAt(Date.from(Instant.now()))
                 .signWith(generateKey())
-                .compact();
+                .compact(), role);
     }
 
     private SecretKey generateKey() {
@@ -50,10 +52,4 @@ public class JwtUtils {
                 .parseSignedClaims(jwt)
                 .getPayload();
     }
-
-    public String getRole(String jwt) {
-        Claims claims = getClaims(jwt);
-        return claims.get("role", String.class);
-    }
-
 }

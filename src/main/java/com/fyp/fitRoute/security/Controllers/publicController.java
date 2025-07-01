@@ -78,9 +78,7 @@ public class publicController {
             if (user==null)
                 throw new RuntimeException("User not found");
 
-            String token = jwtService.generateToken(user);
-
-            loginResponse response = new loginResponse(token, jwtService.getRole(token));
+            loginResponse response = jwtService.generateToken(user);
 
             return new ResponseEntity<>(response, HttpStatus.OK);
         } catch (Exception ex) {
@@ -148,8 +146,7 @@ public class publicController {
                     loginForm.getUsername(), loginForm.getPassword()
             ));
             if (authentication.isAuthenticated()) {
-                String generatedToken = jwtService.generateToken(myUserDetailService.loadUserByUsername(loginForm.getUsername()));
-                loginResponse login = new loginResponse(generatedToken, jwtService.getRole(generatedToken));
+                loginResponse login = jwtService.generateToken(myUserDetailService.loadUserByUsername(loginForm.getUsername()));
                 return new ResponseEntity<>(
                         login,
                         HttpStatus.OK
