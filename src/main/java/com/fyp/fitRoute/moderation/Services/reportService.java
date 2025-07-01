@@ -107,7 +107,7 @@ public class reportService {
     public int getNumberOfUnsuspendedAccounts() {
         List<User> users = mongoTemplate.findAll(User.class);
         for (User user : users) {
-            userConfig existingUserConfig = userConfigRepository.findById(user.getId()).orElse(null);
+            userConfig existingUserConfig = userConfigRepository.findByUsername(user.getUsername()).orElse(null);
             if (existingUserConfig == null) {
                 // If userConfig does not exist, create a new one
                 existingUserConfig = new userConfig();

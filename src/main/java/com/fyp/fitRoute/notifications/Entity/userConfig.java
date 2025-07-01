@@ -13,7 +13,6 @@ import java.util.List;
 public class userConfig {
     @Id
     private String id;
-    @Indexed(unique = true)
     private String username;
     private List<String> notificationsTokens;
     private boolean suspended;
