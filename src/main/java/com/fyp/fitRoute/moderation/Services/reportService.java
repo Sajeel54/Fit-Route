@@ -105,6 +105,19 @@ public class reportService {
 
     // get number of unsuspended accounts
     public int getNumberOfUnsuspendedAccounts() {
+        List<User> users = mongoTemplate.findAll(User.class);
+        for (User user : users) {
+            userConfig existingUserConfig = userConfigRepository.findById(user.getId()).orElse(null);
+            if (existingUserConfig == null) {
+                // If userConfig does not exist, create a new one
+                existingUserConfig = new userConfig();
+                existingUserConfig.setNotificationsTokens(new ArrayList<>());
+                existingUserConfig.setUsername(user.getUsername());
+                existingUserConfig.setSuspended(false);
+                existingUserConfig.setSuspensionEndDate(null);
+                userConfigRepository.save(existingUserConfig);
+            }
+        }
         return userConfigRepository.findAllBySuspended(false).size();
     }
 
