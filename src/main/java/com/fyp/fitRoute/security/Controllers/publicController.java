@@ -81,7 +81,7 @@ public class publicController {
 
             String token = jwtService.generateToken(user);
 
-            loginResponse response = new loginResponse(token);
+            loginResponse response = new loginResponse(token, jwtService.getRole(token));
 
             return new ResponseEntity<>(response, HttpStatus.OK);
         } catch (Exception ex) {
@@ -150,7 +150,7 @@ public class publicController {
             ));
             if (authentication.isAuthenticated()) {
                 String generatedToken = jwtService.generateToken(myUserDetailService.loadUserByUsername(loginForm.getUsername()));
-                loginResponse login = new loginResponse(generatedToken);
+                loginResponse login = new loginResponse(generatedToken, jwtService.getRole(generatedToken));
                 return new ResponseEntity<>(
                         login,
                         HttpStatus.OK

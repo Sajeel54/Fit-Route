@@ -51,4 +51,9 @@ public class JwtUtils {
                 .getPayload();
     }
 
+    public String getRole(String jwt) {
+        Claims claims = getClaims(jwt);
+        return claims.get("role", String.class);
+    }
+
 }
