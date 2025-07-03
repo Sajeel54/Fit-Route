@@ -175,6 +175,12 @@ public class userService {
                 profileCard.class);
     }
 
+    public List<User> searchUserForAdmin(String username) {
+        return mongoTemplate.find(
+                new Query(Criteria.where("username").regex(username, "i")),
+                User.class);
+    }
+
     public List<profileCard> getProfileCardOfFollowed(String username, String myId) {
         List<profileCard> users = mongoTemplate.find(
                 new Query(Criteria.where("username").regex(username, "i")),

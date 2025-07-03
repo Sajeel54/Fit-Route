@@ -257,4 +257,19 @@ public class userController {
         }
     }
 
+    @GetMapping("/searchUserForAdmin")
+    @Operation( summary = "Search user for admin" )
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<?> searchUserForAdmin(@RequestParam("u") String username) {
+        try {
+            List<User> users = uService.searchUserForAdmin(username);
+            if (users.isEmpty())
+                throw new RuntimeException("No user found");
+            return new ResponseEntity<>(users, HttpStatus.OK);
+        } catch (Exception e) {
+            log.error("Error searching users for admin: {}", e.getMessage());
+            return new ResponseEntity<>(new Response(e.getMessage(), Date.from(Instant.now())), HttpStatus.NO_CONTENT);
+        }
+    }
+
 }
