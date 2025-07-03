@@ -9,11 +9,13 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
+import org.springframework.web.bind.annotation.CrossOrigin;
 
 @SpringBootApplication
 @EnableTransactionManagement
 @EnableMethodSecurity(prePostEnabled = true, securedEnabled = true, jsr250Enabled = true)
 @EnableScheduling
+@CrossOrigin(origins = "*" , allowedHeaders = "*", allowCredentials = "true")
 public class FitRouteApplication {
 
 	public static void main(String[] args) {
