@@ -5,6 +5,7 @@ import com.fyp.fitRoute.inventory.Utilities.Response;
 import com.fyp.fitRoute.inventory.Utilities.numericResponse;
 import com.fyp.fitRoute.moderation.Services.reportService;
 import com.fyp.fitRoute.moderation.Utilities.reportRequest;
+import com.fyp.fitRoute.security.Entity.User;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.Instant;
 import java.util.Date;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/report")
@@ -73,9 +75,10 @@ public class reportController {
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> getReportsByUsername(@RequestParam String username) {
         try {
-            String reportedId = userServic.getUserByName(username)
-                    .orElseThrow(() -> new RuntimeException("User not found")).getId();
-            return new ResponseEntity<>(reportService.getAllReportsOfUser(reportedId), HttpStatus.OK);
+            Optional<User> user = userServic.getUserByName(username);
+            if (user.isEmpty())
+                throw new RuntimeException("User not found");
+            return new ResponseEntity<>(reportService.getAllReportsOfUser(user.get().getId()), HttpStatus.OK);
         } catch (Exception e) {
             log.error("Error fetching reports by username: {}", e.getMessage());
             return new ResponseEntity<>(new Response(e.getMessage(), Date.from(Instant.now())), HttpStatus.BAD_REQUEST);

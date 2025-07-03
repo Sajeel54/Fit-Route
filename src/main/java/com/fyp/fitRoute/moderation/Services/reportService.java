@@ -90,7 +90,7 @@ public class reportService {
                 existingCard.setReportCount(existingCard.getReportCount() + 1);
            } else {
                 User user = mongoTemplate.findById(report.getReportedUserId(), User.class);
-                if (user != null) {
+                if (user != null && user.getRole().equals("USER")) {
                     reportCard newCard = new reportCard();
                     newCard.setUsername(user.getUsername());
                     newCard.setReportCount(1);

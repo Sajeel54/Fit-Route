@@ -226,4 +226,20 @@ public class userController {
         }
     }
 
+    @PutMapping("/update")
+    @Operation( summary = "Update any user" )
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<?> updateAnyUser(@RequestBody UserDto userDetails) {
+        try{
+            Optional<User> user = uService.getUserByName(userDetails.getUsername());
+            if (user.isEmpty())
+                throw new RuntimeException("User not found");
+            User saved = uService.updateUser(user.get().getId(), userDetails);
+            return new ResponseEntity<>(saved, HttpStatus.OK);
+        } catch (Exception e){
+            log.error("Error updating user profile: {}", e.getMessage());
+            return new ResponseEntity<>(new Response(e.getMessage(), Date.from(Instant.now())), HttpStatus.BAD_REQUEST);
+        }
+    }
+
 }
