@@ -37,7 +37,7 @@ public class userController {
     private followsService flwService;
 
     @PreAuthorize("hasRole('ADMIN')")
-    @GetMapping("/ADMIN")
+    @GetMapping("/allUsers")
     @Operation( summary = "Get All Users" )
     public ResponseEntity<?> getAllUsers() {
         try{
@@ -222,6 +222,21 @@ public class userController {
             return new ResponseEntity<>(new numericResponse((int)uService.getTotalUsers()), HttpStatus.OK);
         } catch (Exception e) {
             log.error("Error getting total users: {}", e.getMessage());
+            return new ResponseEntity<>(new Response(e.getMessage(), Date.from(Instant.now())), HttpStatus.NO_CONTENT);
+        }
+    }
+
+    @GetMapping("/userDetails")
+    @Operation( summary = "get user details" )
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<?> searchUserDetails(@RequestParam("u") String username){
+        try {
+            Optional<User> user = uService.getUserByName(username);
+            if (user.isEmpty())
+                throw new RuntimeException("User not found");
+            return new ResponseEntity<>(user.get(), HttpStatus.OK);
+        } catch (Exception e){
+            log.error("Error searching users: {}", e.getMessage());
             return new ResponseEntity<>(new Response(e.getMessage(), Date.from(Instant.now())), HttpStatus.NO_CONTENT);
         }
     }
